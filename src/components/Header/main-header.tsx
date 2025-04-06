@@ -64,7 +64,7 @@ export const Header = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden px-4 pb-4 flex flex-col gap-2 bg-blue-50 border-t border-blue-100">
+        <div className="md:hidden px-4 pb-4 flex flex-col gap-2">
           {navLinks.map((link) => (
             <a
               key={link.href}
