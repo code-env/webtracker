@@ -39,12 +39,12 @@ export function PricingCard({
       className={cn(
         "relative rounded-xl border bg-background p-8",
         "transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
-        popular && "border-primary/50 bg-primary/5 dark:bg-blue-950/20 dark:border-blue-500/30"
+        popular && "border-blue-400/50 bg-blue-50 shadow-sm"
       )}
     >
       {popular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-primary text-primary-foreground text-sm font-medium px-3 py-1 rounded-full">
+          <span className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full">
             Most Popular
           </span>
         </div>
@@ -81,7 +81,7 @@ export function PricingCard({
         >
           {features.map((feature, i) => (
             <li key={i} className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-primary flex-shrink-0" />
+              <Check className="h-4 w-4 text-blue-500 flex-shrink-0" />
               <span className="text-muted-foreground text-sm">{feature}</span>
             </li>
           ))}
@@ -97,8 +97,9 @@ export function PricingCard({
           <Button 
             className={cn(
               "w-full",
-              "dark:hover:bg-blue-600",
-              popular ? "dark:bg-blue-500" : "dark:border-blue-500/50 dark:hover:bg-blue-950/50"
+              popular 
+                ? "bg-blue-500 text-white hover:bg-blue-600" 
+                : "border-blue-300 hover:bg-blue-50"
             )}
             variant={popular ? "default" : "outline"}
           >
@@ -109,7 +110,7 @@ export function PricingCard({
 
       {/* Animated border on hover */}
       <motion.div
-        className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40"
+        className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-blue-400/40 via-blue-500/60 to-blue-400/40"
         initial={{ width: "0%" }}
         whileHover={{ width: "100%" }}
         transition={{ duration: 0.3 }}

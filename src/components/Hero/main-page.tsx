@@ -132,7 +132,7 @@ export default function HeroSection() {
     <main className="flex px-8">
       <section className="container py-12 md:py-24 lg:py-32 relative overflow-hidden">
         <div
-          className="absolute inset-0 -z-10 dark:bg-[radial-gradient(45%_25%_at_50%_50%,#1e3a8a_0%,transparent_100%)] bg-[radial-gradient(45%_25%_at_50%_50%,#d1fae5_0%,transparent_100%)] opacity-20 dark:opacity-30"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(45%_25%_at_50%_50%,#e6f0ff_0%,transparent_100%)] opacity-70"
         ></div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_500px] xl:grid-cols-[1fr_550px]">
@@ -148,17 +148,17 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.h1
-              className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl text-blue-900 dark:text-blue-100"
+              className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl text-blue-900"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               Powerful Analytics <br />
-              <span className="text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-200 bg-clip-text text-transparent">Without the Price Tag</span>
+              <span className="text-blue-600 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text">Without the Price Tag</span>
             </motion.h1>
 
             <motion.p
-              className="max-w-[600px] text-blue-800 md:text-xl dark:text-blue-200"
+              className="max-w-[600px] text-blue-700 md:text-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -172,13 +172,13 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="bg-blue-600">
                 <Link href="/auth/register">
                   Start Tracking Now
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="text-blue-600 border-blue-600 hover:bg-blue-50">
                 <Link href="#features">See Features</Link>
               </Button>
             </motion.div>
@@ -189,12 +189,12 @@ export default function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <CheckCircle2 className="h-4 w-4 text-primary" />
-              <span>No credit card required</span>
+              <CheckCircle2 className="h-4 w-4 text-blue-600" />
+              <span className="text-blue-500">No credit card required</span>
               <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span>Privacy-focused</span>
+              <span className="text-blue-500">Privacy-focused</span>
               <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span>Unlimited websites</span>
+              <span className="text-blue-500">Unlimited websites</span>
             </motion.div>
           </div>
 
@@ -203,7 +203,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative w-full h-[400px] lg:h-[500px] bg-gradient-to-t from-blue-100 via-blue-50 to-white dark:from-blue-900 dark:via-blue-800 dark:to-blue-950 rounded-lg p-6"
+              className="relative w-full h-[400px] lg:h-[500px] bg-gradient-to-t from-blue-100 via-blue-50 to-white rounded-lg p-6"
             >
               <HeroAnimation />
             </motion.div>
@@ -213,7 +213,7 @@ export default function HeroSection() {
 
         </div>
         <section className="container py-12 md:py-24 lg:py-32">
-            <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-100">
+            <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
                 Features that Make a Difference
             </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -229,7 +229,7 @@ export default function HeroSection() {
 
         <section className="py-20" id="testimonials">
       <div className="container">
-        <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-100">
+        <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
           Loved by Developers
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
@@ -247,8 +247,8 @@ export default function HeroSection() {
     <section className="py-20" id="pricing">
   <div className="container">
     <div className="text-center space-y-4 mb-12">
-      <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-100">Simple, Transparent Pricing</h2>
-      <p className="text-blue-800 max-w-[600px] mx-auto dark:text-blue-200">
+      <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">Simple, Transparent Pricing</h2>
+      <p className="text-blue-700 max-w-[600px] mx-auto">
         Choose the plan that best fits your needs. All plans include core analytics features.
       </p>
     </div>
@@ -266,7 +266,7 @@ export default function HeroSection() {
 
 <section className="py-20" id="faq">
   <div className="container">
-    <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-100">
+    <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
       Frequently Asked Questions
     </h2>
    

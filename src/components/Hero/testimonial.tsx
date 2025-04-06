@@ -49,10 +49,9 @@ export function TestimonialCard({ quote, author, role, delay = 0 }: TestimonialC
       }}
       className={cn(
         "group relative overflow-hidden",
-        "rounded-xl border bg-gradient-to-br from-background via-background/50 to-background/90",
+        "rounded-xl border bg-gradient-to-br from-blue-50 via-white to-blue-50",
         "p-6 transition-all duration-300",
-        "hover:shadow-lg hover:-translate-y-1",
-        "dark:from-background/50 dark:via-blue-950/10 dark:to-background"
+        "hover:shadow-lg hover:-translate-y-1"
       )}
     >
       {/* Quote mark */}
@@ -60,7 +59,7 @@ export function TestimonialCard({ quote, author, role, delay = 0 }: TestimonialC
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: delay + 0.2 }}
-        className="text-4xl font-serif text-primary/20"
+        className="text-4xl font-serif text-blue-300"
       >
         <span className="absolute top-0 left-0 transform -translate-x-1/2 -translate-y-1/2">
           &ldquo;
@@ -76,7 +75,7 @@ export function TestimonialCard({ quote, author, role, delay = 0 }: TestimonialC
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: delay + 0.3 }}
-        className="mt-2 text-muted-foreground italic relative z-10"
+        className="mt-2 text-gray-600 italic relative z-10"
       >
         {quote}
       </motion.p>
@@ -86,18 +85,18 @@ export function TestimonialCard({ quote, author, role, delay = 0 }: TestimonialC
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: delay + 0.4 }}
-        className="mt-4 pt-4 border-t border-border relative z-10"
+        className="mt-4 pt-4 border-t border-blue-100 relative z-10"
       >
-        <p className="font-medium tracking-tight">{author}</p>
-        <p className="text-sm text-muted-foreground">{role}</p>
+        <p className="font-medium tracking-tight text-blue-900">{author}</p>
+        <p className="text-sm text-blue-600">{role}</p>
       </motion.div>
 
       {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-blue-500/5 dark:via-blue-400/5 dark:to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       
       {/* Animated border on hover */}
       <motion.div
-        className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 dark:from-blue-500/40 dark:via-blue-400/60 dark:to-blue-500/40"
+        className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-300"
         initial={{ width: "0%" }}
         whileHover={{ width: "100%" }}
         transition={{ duration: 0.3 }}
