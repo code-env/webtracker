@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {  Inria_Serif } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer/mainFooter";
 
 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inriaSerif = Inria_Serif({
+  weight: ["400", "700"],
+  variable: "--font-inria-serif",
   subsets: ["latin"],
 });
 
@@ -29,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen mx-auto  bg-background text-foreground`}
+        className={`${inriaSerif.variable} ${inriaSerif.variable} ${inriaSerif.style} antialiased min-h-screen mx-auto  bg-background text-foreground`}
         
       >
         

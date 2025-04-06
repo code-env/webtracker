@@ -28,24 +28,24 @@ const HeroAnimation = () => {
         style={{ backgroundColor, borderColor }}
       >
         {/* Dashboard Header */}
-        <div className="p-4 border-b bg-gray-50" style={{ borderColor }}>
+        <div className="p-2 sm:p-4 border-b bg-gray-50" style={{ borderColor }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-400" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500" />
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-400" />
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
             </div>
-            <div className="text-sm font-medium" style={{ color: textColor }}>
+            <div className="text-xs sm:text-sm font-medium" style={{ color: textColor }}>
               WebTracker Dashboard
             </div>
-            <div className="w-16" />
+            <div className="w-8 sm:w-16" />
           </div>
         </div>
 
         {/* Dashboard Content */}
-        <div className="p-4">
+        <div className="p-2 sm:p-4">
           {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4">
             {[
               { label: "Visitors", value: "1,234", color: primaryColor },
               { label: "Page Views", value: "5,678", color: secondaryColor },
@@ -56,11 +56,11 @@ const HeroAnimation = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
-                className="rounded-lg p-3 border bg-white shadow-sm"
+                className="rounded-lg p-2 sm:p-3 border bg-white shadow-sm"
                 style={{ borderColor }}
               >
                 <div className="text-xs text-gray-500">{stat.label}</div>
-                <div className="text-xl font-bold" style={{ color: stat.color }}>
+                <div className="text-lg sm:text-xl font-bold" style={{ color: stat.color }}>
                   {stat.value}
                 </div>
               </motion.div>
@@ -72,11 +72,11 @@ const HeroAnimation = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="rounded-lg p-3 border bg-white mb-4 h-[180px] shadow-sm"
+            className="rounded-lg p-2 sm:p-3 border bg-white mb-4 h-[140px] sm:h-[180px] shadow-sm"
             style={{ borderColor }}
           >
-            <div className="text-sm font-medium text-gray-700 mb-2">Visitors Over Time</div>
-            <div className="h-[140px] w-full">
+            <div className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Visitors Over Time</div>
+            <div className="h-[100px] sm:h-[140px] w-full">
               <svg width="100%" height="100%" viewBox="0 0 300 100" preserveAspectRatio="none">
                 <motion.path
                   initial={{ pathLength: 0 }}
@@ -105,11 +105,11 @@ const HeroAnimation = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="rounded-lg p-3 border bg-white shadow-sm"
+            className="rounded-lg p-2 sm:p-3 border bg-white shadow-sm"
             style={{ borderColor }}
           >
-            <div className="text-sm font-medium text-gray-700 mb-2">Top Pages</div>
-            <div className="space-y-2 text-sm">
+            <div className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Top Pages</div>
+            <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
               {[
                 { page: "/home", views: "543" },
                 { page: "/products", views: "421" },
