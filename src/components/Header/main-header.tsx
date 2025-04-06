@@ -16,7 +16,7 @@ export const Header = () => {
   ];
 
   return (
-    <nav className="w-full top-0">
+    <nav className="flex flex-row items-center justify-center">
       <div className="container flex items-center justify-between h-16 px-4 md:px-6">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold flex items-center space-x-2 text-blue-700">
