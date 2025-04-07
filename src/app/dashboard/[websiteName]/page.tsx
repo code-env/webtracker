@@ -1,5 +1,5 @@
-export default async function DashboardPage({params}: {params: {websiteName: string}}) {
-    const {websiteName} = await params;
+export default async function DashboardPage({ params }: { params: Promise<{websiteName: string}> }) {
+    const { websiteName } = await params;
     return (
         <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
