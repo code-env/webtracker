@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inriaSerif.variable} ${inriaSerif.variable} ${inriaSerif.style} antialiased min-h-screen mx-auto  bg-background text-foreground`}
+        className={`${inriaSerif.variable} ${inriaSerif.variable} ${inriaSerif.style} antialiased`}
         
       >
         
