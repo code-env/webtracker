@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer/mainFooter";
 
-
+import { Toaster } from "@/components/ui/sonner"
 
 
 const inriaSerif = Inria_Serif({
@@ -32,6 +32,7 @@ export default function RootLayout({
         
         <Header/>
         {children}
+        <Toaster className="bg-blue-500"/>
         <Footer/>
        
       </body>
