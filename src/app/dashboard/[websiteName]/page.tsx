@@ -7,9 +7,9 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
-export default function DashboardPage({ params }: { params: { websiteName: string } }) {
+export default function DashboardPage({ params }: { params: Promise<{ websiteName: string }> }) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-expect-error
+    
     const resolvedParams = React.use(params);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
