@@ -1,6 +1,8 @@
+import { auth } from "@/auth";
 import AddWebsite from "@/components/dashboard/add-website";
 import { WebsiteCard } from "@/components/dashboard/wesbite-card";
 import { Button } from "@/components/ui/button";
+import {redirect} from "next/navigation";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 
@@ -26,7 +28,13 @@ const websites = [
 ]
 
 
-export default function Dashboard(){
+export default async function Dashboard(){
+    const session = await auth();
+    if(!session){
+      redirect("/");
+    }
+
+    
     return(
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">

@@ -3,6 +3,7 @@ import {  Inria_Serif } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer/mainFooter";
+import { SessionProvider } from "next-auth/react";
 
 import { Toaster } from "@/components/ui/sonner"
 
@@ -29,11 +30,13 @@ export default function RootLayout({
         className={`${inriaSerif.variable} ${inriaSerif.variable} ${inriaSerif.style} antialiased`}
         
       >
+        <SessionProvider>
         
         <Header/>
         {children}
         <Toaster className="bg-blue-500"/>
         <Footer/>
+        </SessionProvider>
        
       </body>
     </html>
