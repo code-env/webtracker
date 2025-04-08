@@ -5,14 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
 export default function DashboardPage({ params }: { params: Promise<{ websiteName: string }> }) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    
     const resolvedParams = React.use(params);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const websiteName = resolvedParams?.websiteName || 'example.com';
     const [dateRange, setDateRange] = useState('week');
     const pageViewData = [
@@ -87,187 +84,174 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <Link href="/dashboard">
-            <Button variant="secondary" className="bg-blue-500 text-white hover:bg-blue-600">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          <div className="flex space-x-2">
-            <Button 
-              variant={dateRange === 'day' ? 'default' : 'outline'} 
-              onClick={() => setDateRange('day')}
-              className={dateRange === 'day' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'border-blue-500 text-blue-500 hover:bg-blue-100'}
-            >
-              Day
-            </Button>
-            <Button 
-              variant={dateRange === 'week' ? 'default' : 'outline'} 
-              onClick={() => setDateRange('week')}
-              className={dateRange === 'week' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'border-blue-500 text-blue-500 hover:bg-blue-100'}
-            >
-              Week
-            </Button>
-            <Button 
-              variant={dateRange === 'month' ? 'default' : 'outline'} 
-              onClick={() => setDateRange('month')}
-              className={dateRange === 'month' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'border-blue-500 text-blue-500 hover:bg-blue-100'}
-            >
-              Month
-            </Button>
-          </div>
-        </div>
-        
-        <h1 className="text-3xl font-bold text-blue-600 mb-6">Analytics for {websiteName}</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card className="shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Total Page Views</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-500">17,550</div>
-              <div className="text-sm text-green-500">+12.5% from last week</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Unique Visitors</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-500">8,604</div>
-              <div className="text-sm text-green-500">+5.2% from last week</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Avg. Session Duration</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-500">3m 42s</div>
-              <div className="text-sm text-red-500">-1.3% from last week</div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Page Views & Unique Visitors</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={pageViewData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="views" stroke="#0088FE" strokeWidth={2} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="uniqueVisitors" stroke="#00C49F" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Bounce Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={bounceRateData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="rate" stroke="#FF8042" fill="#FF8042" fillOpacity={0.3} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Traffic Sources</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={trafficSourcesData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {trafficSourcesData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Active Sessions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={userSessionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="activeSessions" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <Card className="shadow-lg mb-6">
-          <CardHeader>
-            <CardTitle>Top Pages</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topPagesData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="page" type="category" width={100} />
-                  <Tooltip />
-                  <Bar dataKey="views" fill="#0088FE" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <Link href="/dashboard">
+                        <Button variant="secondary" className="bg-blue-500 text-white hover:bg-blue-600">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Dashboard
+                        </Button>
+                    </Link>
+                    <Select value={dateRange} onValueChange={setDateRange}>
+                        <SelectTrigger className="w-[180px] border border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100">
+                            <SelectValue placeholder="Select time range" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-blue-200">
+                            <SelectItem value="day" className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer">Day</SelectItem>
+                            <SelectItem value="week" className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer">Week</SelectItem>
+                            <SelectItem value="month" className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer">Month</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-6">Analytics for {websiteName}</h1>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+                    <Card className="shadow-lg">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">Total Page Views</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-blue-500">17,550</div>
+                            <div className="text-sm text-green-500">+12.5% from last week</div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="shadow-lg">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">Unique Visitors</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-blue-500">8,604</div>
+                            <div className="text-sm text-green-500">+5.2% from last week</div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="shadow-lg">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">Avg. Session Duration</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-blue-500">3m 42s</div>
+                            <div className="text-sm text-red-500">-1.3% from last week</div>
+                        </CardContent>
+                    </Card>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <Card className="shadow-lg">
+                        <CardHeader>
+                            <CardTitle>Page Views & Unique Visitors</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={pageViewData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="date" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="views" stroke="#0088FE" strokeWidth={2} activeDot={{ r: 8 }} />
+                                        <Line type="monotone" dataKey="uniqueVisitors" stroke="#00C49F" strokeWidth={2} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="shadow-lg">
+                        <CardHeader>
+                            <CardTitle>Bounce Rate</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={bounceRateData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="date" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Area type="monotone" dataKey="rate" stroke="#FF8042" fill="#FF8042" fillOpacity={0.3} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <Card className="shadow-lg">
+                        <CardHeader>
+                            <CardTitle>Traffic Sources</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={trafficSourcesData}
+                                            cx="50%"
+                                            cy="50%"
+                                            labelLine={false}
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="value"
+                                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                        >
+                                            {trafficSourcesData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="shadow-lg">
+                        <CardHeader>
+                            <CardTitle>Active Sessions</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={userSessionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="time" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Area type="monotone" dataKey="activeSessions" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                
+                <Card className="shadow-lg mb-6">
+                    <CardHeader>
+                        <CardTitle>Top Pages</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-64">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={topPagesData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis type="number" />
+                                    <YAxis dataKey="page" type="category" width={100} />
+                                    <Tooltip />
+                                    <Bar dataKey="views" fill="#0088FE" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <Card className="shadow-lg">
                         <CardHeader>
                             <CardTitle>Top Countries</CardTitle>
@@ -345,7 +329,7 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                         </CardContent>
                     </Card>
                 </div>
-      </div>
-    </div>
-    )
+            </div>
+        </div>
+    );
 }
