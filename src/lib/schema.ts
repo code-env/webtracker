@@ -197,14 +197,6 @@ export const authenticators = pgTable(
   })
 )
 
-// Log table
-export const logs = pgTable("log", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  message: text("message").notNull(),
-  level: text("level").default("info"),
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().$onUpdate(() => new Date()),
-})
 
 // BugReport table
 export const bugReports = pgTable("bugReport", {
