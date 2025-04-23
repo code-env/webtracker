@@ -5,34 +5,20 @@ import { Button } from "@/components/ui/button";
 import {redirect} from "next/navigation";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-
-const websites = [
-    {
-        id: "1",
-        name: "example.com",
-        visitors_count: 1000,
-        pageviews_count: 5000,
-    },
-    {
-        id: "2",
-        name: "example.org",
-        visitors_count: 2000,
-        pageviews_count: 8000,
-    },
-    {
-        id: "3",
-        name: "example.net",
-        visitors_count: 1500,
-        pageviews_count: 6000,
-    }
-]
-
+import { getAllProjects } from "../actions/actions";
 
 export default async function Dashboard(){
     const session = await auth();
     if(!session){
       redirect("/");
     }
+
+    if(!session?.user?.id){
+      redirect("/");
+    }
+
+    const projects = await getAllProjects(session.user.id);
+
 
     
     return(
@@ -53,13 +39,13 @@ export default async function Dashboard(){
             </DialogContent>
           </Dialog>
         </div>
-        {websites.length === 0 ? (
+        {projects?.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-neutral-400">No websites added yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {websites.map((website) => (
+          {projects?.map((website) => (
             <WebsiteCard key={website.id} website={website} />
           ))}
         </div>
