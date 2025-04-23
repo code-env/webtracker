@@ -7,6 +7,9 @@ import { eq } from "drizzle-orm";
 export const getProjects = async (userId: string) => {
   const res = await db.query.projects.findMany({
     where: eq(projects.ownerId, userId),
+    with:{
+      analytics: true
+    }
   });
   return res;
 };

@@ -42,24 +42,33 @@ export const {
     },
 
     callbacks:{
-        async jwt({token, user}) {
-            console.log("JWT callback", {token, user});
+        async jwt({ token, user }) {
             if (user) {
-                token.id = user.id;
-                token.image = user.image;
+             
+              token.id = user.id;
+                token.email = user.email;
                 token.name = user.name;
+                token.picture = user.image;
+             
             }
             return token;
-        },
-        async session({session, user}) {
-            
-            if (session && user) {
-                session.user.id = user.id;
-                session.user.image = user.image;
-                session.user.name = user.name;
+          },
+               
+          async session({ session, token }) {
+            if (token) {
+              // set the token data to session
+              if (session.user) {
+                session.user.id = token.id as string;
+                session.user.email = token.email as string;
+                session.user.name = token.name as string;
+                session.user.image = token.picture as string;
+              }
             }
+      
             return session;
-        },
+          },
+      
+
         redirect() {
             return "/auth";
         }

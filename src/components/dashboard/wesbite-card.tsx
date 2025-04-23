@@ -6,14 +6,17 @@ interface WebsiteCardProps {
   website: {
     id: string;
     name: string;
-    visitors_count?: number;
-    pageviews_count?: number;
+    domain: string;
+    analytics?: {
+      totalVisitors?: number;
+      totalPageVisits?: number;
+    }
   };
 }
 
 export function WebsiteCard({ website }: WebsiteCardProps) {
   return (
-    <Link href={`/dashboard/${website.name}`}>
+    <Link href={`/dashboard/${website.domain}`}>
       <Card className="px-4 hover:ring ring-sky-100/30 group relative overflow-hidden border border-sky-700/20 bg-gradient-to-br from-sky-100 via-white to-sky-50 flex flex-col pb-2 transition-all duration-300">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-200/20 via-sky-100/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         <div className="absolute -inset-px bg-gradient-to-br from-sky-200/30 via-sky-300/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
@@ -29,7 +32,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col space-y-1.5">
               <span className="text-2xl font-bold tracking-tight text-sky-900">
-                {website.visitors_count?.toLocaleString() || '0'}
+                {website.analytics?.totalVisitors?.toLocaleString() || '0'}
               </span>
               <span className="flex items-center text-xs text-sky-600">
                 <Users className="mr-1 h-3 w-3" />
@@ -38,7 +41,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
             </div>
             <div className="flex flex-col space-y-1.5">
               <span className="text-2xl font-bold tracking-tight text-sky-900">
-                {website.pageviews_count?.toLocaleString() || '0'}
+                {website.analytics?.totalPageVisits?.toLocaleString() || '0'}
               </span>
               <span className="flex items-center text-xs text-sky-600">
                 <BarChart2 className="mr-1 h-3 w-3" />

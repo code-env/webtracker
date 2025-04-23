@@ -44,9 +44,20 @@ export default async function Dashboard(){
             <p className="text-neutral-400">No websites added yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects?.map((website) => (
-            <WebsiteCard key={website.id} website={website} />
+            <WebsiteCard 
+              key={website.id} 
+              website={{
+                id: website.id,
+                name: website.name,
+                domain: website.domain || "",
+                analytics:{
+                  totalPageVisits: website?.analytics?.totalPageVisits || 0,
+                  totalVisitors: website?.analytics?.totalVisitors || 0,
+                }
+              }} 
+            />
           ))}
         </div>
         )}

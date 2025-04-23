@@ -1,5 +1,4 @@
 import { Copy } from "lucide-react";
-import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -7,19 +6,21 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-export default function Snippet() {
-  const { website } = useParams();
+interface SnippetProps {
+  domain: string;
+}
 
+export default function Snippet({ domain }: SnippetProps) {
   const react_snippet = `<script
   defer
-  data-domain="${website}"
+  data-domain="${domain}"
   src="https://webtracker.avikmukherjee.tech/tracking-script.js"
 >
 </script>`;
 
   const next_snippet = `<Script
   defer
-  data-domain="${website}"
+  data-domain="${domain}"
   src="https://webtracker.avikmukherjee.tech/tracking-script.js"
 />`;
 
@@ -29,7 +30,7 @@ export default function Snippet() {
   };
 
   return (
-    <Card className=" w-full">
+    <Card className="w-full">
       <CardContent className="pt-6 p-3 sm:p-4">
         <Tabs defaultValue="JavaScript/React.js" className="w-full">
           <TabsList className="w-full grid grid-cols-2 sm:grid-cols-2 bg-sky-100">
@@ -57,7 +58,7 @@ export default function Snippet() {
                   onClick={() => copySnippet(react_snippet)}
                   variant="ghost"
                   size="sm"
-                  className="border border-sky-200 text-blue-500 hover:text-blue-600 hover:bg-blue-600"
+                  className="border border-sky-200 text-blue-500 hover:text-blue-600 hover:bg-blue-100"
                 >
                   <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Copy
