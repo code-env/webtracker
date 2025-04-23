@@ -132,6 +132,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
             </Button>
             <Button 
               variant="destructive" 
+              className="bg-blue-500 text-white hover:bg-blue-600"
               onClick={handleDelete}
               disabled={isDeleting}
             >
