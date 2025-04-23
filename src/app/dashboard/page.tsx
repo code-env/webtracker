@@ -18,8 +18,6 @@ export default async function Dashboard(){
     }
 
     const projects = await getAllProjects(session.user.id);
-
-
     
     return(
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">

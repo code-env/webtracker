@@ -56,6 +56,7 @@ export default function AddWebsite() {
 
       if (data.success) {
         toast.success(data.message || "Website added successfully");
+        router.refresh();
         setStep(2);
       } else {
         toast.error(data.message || "Failed to add website");
