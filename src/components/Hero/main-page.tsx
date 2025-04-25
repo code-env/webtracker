@@ -16,17 +16,17 @@ import { FAQSection } from "./fqa";
 const Features = [
     {
         icon: <LineChart className="h-10 w-10 text-primary" />,
-        title: "Real-time Analytics",
+        title: "Real-time Analytics (Coming Soon)",
         description: "See visitor activity as it happens with live updates and no delay."
     },
     {
         icon: <MousePointer className="h-10 w-10 text-primary" />,
-        title: "Click Tracking",
+        title: "Click Tracking (Coming Soon)",
         description: "Understand exactly what elements visitors interact with on your site."
     },
     {
         icon: <Clock className="h-10 w-10 text-primary" />,
-        title: "Session Duration",
+        title: "Session Duration (Coming Soon)",
         description: "Track how long visitors stay on your site and which pages keep them engaged."
     },
     {
@@ -36,7 +36,7 @@ const Features = [
     },
     {
         icon: <Zap className="h-10 w-10 text-primary" />,
-        title: "Performance Metrics",
+        title: "Performance Metrics (Coming Soon)",
         description: "Monitor page load times and other performance indicators."
     },
     {

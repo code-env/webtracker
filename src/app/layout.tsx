@@ -17,6 +17,48 @@ const inriaSerif = Inria_Serif({
 export const metadata: Metadata = {
   title: "WebTracker",
   description: "A web analytics tool for tracking user behavior and performance",
+  keywords: [
+    "web analytics",
+    "user behavior",
+    "performance tracking",
+    "data visualization",
+    "real-time analytics",
+    "user engagement",
+    "website performance",
+    "analytics dashboard",
+    "data analysis",
+    "user experience",
+    "conversion tracking",
+    "event tracking"],
+  openGraph: {
+    description: "A web analytics tool for tracking user behavior and performance",
+    title: "WebTracker",
+    type: "website",
+    siteName: "WebTracker",
+    locale: "en_US",
+    url: "https://webtracker.avikmukherjee.tech",
+    images: [
+      {
+        url: "https://webtracker.avikmukherjee.tech/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "WebTracker",
+      },
+    ]
+  },
+  twitter:{
+    card: "summary_large_image",
+    description: "A web analytics tool for tracking user behavior and performance",
+    title: "WebTracker",
+    images: [
+      {
+        url: "https://webtracker.avikmukherjee.tech/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "WebTracker",
+      },
+    ]
+  },
 };
 
 export default function RootLayout({
