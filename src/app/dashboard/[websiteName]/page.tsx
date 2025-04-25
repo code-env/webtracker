@@ -1,88 +1,261 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { getDomainAnalytics } from "@/app/actions/db_calls";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Define interfaces for type safety
+interface Visit {
+    timestamp: string;
+    visitorId: string;
+    sessionId?: string;
+    url?: string;
+}
+
+interface RouteAnalytics {
+    routePath: string;
+    visits: number;
+    visitors: number;
+}
+
+interface SourceAnalytics {
+    sourceName: string;
+    visitors: number;
+}
+
+interface CountryAnalytics {
+    countryCode: string;
+    countryName: string;
+    visitors: number;
+}
+
+interface DeviceAnalytics {
+    deviceType: string;
+    visitors: number;
+}
+
+interface OsAnalytics {
+    osName: string;
+    visitors: number;
+}
+
+interface Analytics {
+    visitHistory: Visit[];
+    routeAnalytics: RouteAnalytics[];
+    sourceAnalytics: SourceAnalytics[];
+    countryAnalytics: CountryAnalytics[];
+    deviceAnalytics: DeviceAnalytics[];
+    osAnalytics: OsAnalytics[];
+    totalPageVisits?: number;
+    totalVisitors?: number;
+}
+
+interface AnalyticsData {
+    analytics: Analytics;
+    success?: boolean;
+    message?: string;
+}
+
+// Chart data interfaces
+interface PageViewChartData {
+    date: string;
+    views: number;
+    uniqueVisitors: number;
+}
+
+interface PieChartData {
+    name: string;
+    value: number;
+}
+
+interface BarChartData {
+    page: string;
+    views: number;
+}
+
+interface CountryChartData {
+    country: string;
+    visitors: number;
+}
+
+interface OsChartData {
+    site: string;
+    visits: number;
+}
 
 export default function DashboardPage({ params }: { params: Promise<{ websiteName: string }> }) {
     
     const resolvedParams = React.use(params);
     const websiteName = resolvedParams?.websiteName || 'example.com';
-    const [dateRange, setDateRange] = useState('week');
-    const pageViewData = [
-        { date: 'Mon', views: 4000, uniqueVisitors: 2400 },
-        { date: 'Tue', views: 3000, uniqueVisitors: 1398 },
-        { date: 'Wed', views: 2000, uniqueVisitors: 9800 },
-        { date: 'Thu', views: 2780, uniqueVisitors: 3908 },
-        { date: 'Fri', views: 1890, uniqueVisitors: 4800 },
-        { date: 'Sat', views: 2390, uniqueVisitors: 3800 },
-        { date: 'Sun', views: 3490, uniqueVisitors: 4300 },
-    ];
+    const [dateRange, setDateRange] = useState<'day' | 'week' | 'month'>('week');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null | undefined>(null);
     
-    const bounceRateData = [
-        { date: 'Mon', rate: 45 },
-        { date: 'Tue', rate: 38 },
-        { date: 'Wed', rate: 52 },
-        { date: 'Thu', rate: 40 },
-        { date: 'Fri', rate: 35 },
-        { date: 'Sat', rate: 42 },
-        { date: 'Sun', rate: 47 },
-    ];
-      
-    const trafficSourcesData = [
-        { name: 'Direct', value: 400 },
-        { name: 'Search', value: 300 },
-        { name: 'Social', value: 300 },
-        { name: 'Referral', value: 200 },
-        { name: 'Email', value: 100 },
-    ];
-      
-    const userSessionData = [
-        { time: '9AM', activeSessions: 40 },
-        { time: '10AM', activeSessions: 70 },
-        { time: '11AM', activeSessions: 105 },
-        { time: '12PM', activeSessions: 120 },
-        { time: '1PM', activeSessions: 90 },
-        { time: '2PM', activeSessions: 75 },
-        { time: '3PM', activeSessions: 60 },
-        { time: '4PM', activeSessions: 80 },
-        { time: '5PM', activeSessions: 45 },
-    ];
-      
-    const topPagesData = [
-        { page: '/home', views: 1200 },
-        { page: '/products', views: 980 },
-        { page: '/about', views: 780 },
-        { page: '/contact', views: 690 },
-        { page: '/blog', views: 590 },
-    ];
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+    useEffect(() => {
+        const fetchAnalyticsData = async () => {
+            setLoading(true);
+            try {
+                const data = await getDomainAnalytics(websiteName);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                setAnalyticsData(data);
+            } catch (error) {
+                console.error("Error fetching analytics data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchAnalyticsData();
+    }, [websiteName, dateRange]);
+    
+    // Format visit history data for page views chart
+    const formatVisitHistoryData = (): PageViewChartData[] => {
+        if (!analyticsData?.analytics?.visitHistory?.length) return [];
+        
+        const history = analyticsData.analytics.visitHistory;
+        
+        interface GroupedVisits {
+            [key: string]: {
+                date: string;
+                views: number;
+                uniqueVisitors: Set<string>;
+            }
+        }
+        
+        // Group by date and count views and unique visitors
+        const groupedData = history.reduce((acc: GroupedVisits, visit: Visit) => {
+            const date = new Date(visit.timestamp).toLocaleDateString('en-US', { weekday: 'short' });
+            if (!acc[date]) {
+                acc[date] = { date, views: 0, uniqueVisitors: new Set() };
+            }
+            acc[date].views++;
+            acc[date].uniqueVisitors.add(visit.visitorId);
+            return acc;
+        }, {});
+        
+        // Convert to array and format for chart
+        return Object.values(groupedData).map((item) => ({
+            date: item.date,
+            views: item.views,
+            uniqueVisitors: item.uniqueVisitors.size
+        }));
+    };
+    
+    // Format source analytics data for pie chart
+    const formatSourceData = (): PieChartData[] => {
+        if (!analyticsData?.analytics?.sourceAnalytics?.length) return [];
+        
+        return analyticsData.analytics.sourceAnalytics.map((source: SourceAnalytics) => ({
+            name: source.sourceName,
+            value: source.visitors
+        }));
+    };
+    
+    // Format route analytics data for bar chart
+    const formatRouteData = (): BarChartData[] => {
+        if (!analyticsData?.analytics?.routeAnalytics?.length) return [];
+        
+        return analyticsData.analytics.routeAnalytics
+            .sort((a: RouteAnalytics, b: RouteAnalytics) => b.visits - a.visits)
+            .slice(0, 5)
+            .map((route: RouteAnalytics) => ({
+                page: route.routePath,
+                views: route.visits
+            }));
+    };
+    
+    // Format country analytics data
+    const formatCountryData = (): CountryChartData[] => {
+        if (!analyticsData?.analytics?.countryAnalytics?.length) return [];
+        
+        return analyticsData.analytics.countryAnalytics
+            .sort((a: CountryAnalytics, b: CountryAnalytics) => b.visitors - a.visitors)
+            .slice(0, 5)
+            .map((country: CountryAnalytics) => ({
+                country: country.countryName,
+                visitors: country.visitors
+            }));
+    };
+    
+    // Format device analytics data
+    const formatDeviceData = (): PieChartData[] => {
+        if (!analyticsData?.analytics?.deviceAnalytics?.length) return [];
+        
+        return analyticsData.analytics.deviceAnalytics.map((device: DeviceAnalytics) => ({
+            name: device.deviceType,
+            value: device.visitors
+        }));
+    };
+    
+    // Format OS analytics data for a chart
+    const formatOSData = (): OsChartData[] => {
+        if (!analyticsData?.analytics?.osAnalytics?.length) return [];
+        
+        return analyticsData.analytics.osAnalytics
+            .sort((a: OsAnalytics, b: OsAnalytics) => b.visitors - a.visitors)
+            .slice(0, 5)
+            .map((os: OsAnalytics) => ({
+                site: os.osName,
+                visits: os.visitors
+            }));
+    };
+    
+    // Calculate total page views
+    const calculateTotalPageViews = (): number => {
+        if (!analyticsData?.analytics?.visitHistory) return 0;
+        return analyticsData.analytics.visitHistory.length;
+    };
+    
+    // Calculate unique visitors
+    const calculateUniqueVisitors = (): number => {
+        if (!analyticsData?.analytics?.visitHistory) return 0;
+        const uniqueVisitors = new Set(
+            analyticsData.analytics.visitHistory.map((visit: Visit) => visit.visitorId)
+        );
+        return uniqueVisitors.size;
+    };
+    
+    
+    
+    const pageViewData: PageViewChartData[] = formatVisitHistoryData();
+    const trafficSourcesData: PieChartData[] = formatSourceData();
+    const topPagesData: BarChartData[] = formatRouteData();
+    const countryData: CountryChartData[] = formatCountryData();
+    const deviceData: PieChartData[] = formatDeviceData();
+    const referrerData: OsChartData[] = formatOSData();
+    
+    const COLORS: string[] = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
-    const countryData = [
-        { country: 'United States', visitors: 2500 },
-        { country: 'United Kingdom', visitors: 1800 },
-        { country: 'Germany', visitors: 1400 },
-        { country: 'France', visitors: 1200 },
-        { country: 'India', visitors: 1000 },
-    ];
+    // Skeleton component for loading state
+    const CardSkeleton = () => (
+        <Card className="shadow-md">
+            <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
+                <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent className="py-2 px-3 sm:px-4">
+                <Skeleton className="h-8 w-20 mb-2" />
+                <Skeleton className="h-4 w-32" />
+            </CardContent>
+        </Card>
+    );
 
-    const referrerData = [
-        { site: 'Google', visits: 3500 },
-        { site: 'Facebook', visits: 2800 },
-        { site: 'Twitter', visits: 1900 },
-        { site: 'LinkedIn', visits: 1500 },
-        { site: 'GitHub', visits: 1200 },
-    ];
-
-    const deviceData = [
-        { name: 'Desktop', value: 580 },
-        { name: 'Mobile', value: 480 },
-        { name: 'Tablet', value: 140 },
-    ];
+    const ChartSkeleton = () => (
+        <Card className="shadow-md">
+            <CardHeader className="py-2 px-3 sm:px-4">
+                <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent className="p-0 sm:p-2">
+                <Skeleton className="h-48 sm:h-64 md:h-80 w-full" />
+            </CardContent>
+        </Card>
+    );
 
     return (
         <div className="min-h-screen bg-white p-1 sm:p-4 overflow-hidden mb-3">
@@ -94,7 +267,7 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                             Back to Dashboard
                         </Button>
                     </Link>
-                    <Select value={dateRange} onValueChange={setDateRange}>
+                    <Select value={dateRange} onValueChange={(value) => setDateRange(value as "day" | "week" | "month")}>
                       <SelectTrigger className="w-28 sm:w-36 md:w-48 border border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] sm:text-xs md:text-sm">
                         <SelectValue placeholder="Select time range" />
                       </SelectTrigger>
@@ -109,226 +282,265 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 mb-3 sm:mb-6 truncate">Analytics for {websiteName}</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-6">
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
-                            <CardTitle className="text-sm sm:text-lg">Total Page Views</CardTitle>
-                        </CardHeader>
-                        <CardContent className="py-2 px-3 sm:px-4">
-                            <div className="text-xl sm:text-3xl font-bold text-blue-500">17,550</div>
-                            <div className="text-xs sm:text-sm text-green-500">+12.5% from last week</div>
-                        </CardContent>
-                    </Card>
-                    
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
-                            <CardTitle className="text-sm sm:text-lg">Unique Visitors</CardTitle>
-                        </CardHeader>
-                        <CardContent className="py-2 px-3 sm:px-4">
-                            <div className="text-xl sm:text-3xl font-bold text-blue-500">8,604</div>
-                            <div className="text-xs sm:text-sm text-green-500">+5.2% from last week</div>
-                        </CardContent>
-                    </Card>
-                    
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
-                            <CardTitle className="text-sm sm:text-lg">Avg. Session Duration</CardTitle>
-                        </CardHeader>
-                        <CardContent className="py-2 px-3 sm:px-4">
-                            <div className="text-xl sm:text-3xl font-bold text-blue-500">3m 42s</div>
-                            <div className="text-xs sm:text-sm text-red-500">-1.3% from last week</div>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <>
+                            <CardSkeleton />
+                            <CardSkeleton />
+                            <CardSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-lg">Total Page Views</CardTitle>
+                                </CardHeader>
+                                <CardContent className="py-2 px-3 sm:px-4">
+                                    <div className="text-xl sm:text-3xl font-bold text-blue-500">{calculateTotalPageViews()}</div>
+                                    <div className="text-xs sm:text-sm text-green-500">Analytics since project creation</div>
+                                </CardContent>
+                            </Card>
+                            
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:pb-2 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-lg">Unique Visitors</CardTitle>
+                                </CardHeader>
+                                <CardContent className="py-2 px-3 sm:px-4">
+                                    <div className="text-xl sm:text-3xl font-bold text-blue-500">{calculateUniqueVisitors()}</div>
+                                    <div className="text-xs sm:text-sm text-green-500">Analytics since project creation</div>
+                                </CardContent>
+                            </Card>
+                            
+                            
+                        </>
+                    )}
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Page Views & Unique Visitors</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={pageViewData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                                        <YAxis tick={{ fontSize: 10 }} />
-                                        <Tooltip />
-                                        <Legend wrapperStyle={{ fontSize: '10px' }} />
-                                        <Line type="monotone" dataKey="views" stroke="#0088FE" strokeWidth={2} activeDot={{ r: 6 }} />
-                                        <Line type="monotone" dataKey="uniqueVisitors" stroke="#00C49F" strokeWidth={2} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Bounce Rate</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={bounceRateData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                                        <YAxis tick={{ fontSize: 10 }} />
-                                        <Tooltip />
-                                        <Area type="monotone" dataKey="rate" stroke="#FF8042" fill="#FF8042" fillOpacity={0.3} />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <>
+                            <ChartSkeleton />
+                            <ChartSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-base">Page Views & Unique Visitors</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0 sm:p-2">
+                                    <div className="h-48 sm:h-64 md:h-80">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            {pageViewData.length > 0 ? (
+                                                <LineChart data={pageViewData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                                                    <YAxis tick={{ fontSize: 10 }} />
+                                                    <Tooltip />
+                                                    <Legend wrapperStyle={{ fontSize: '10px' }} />
+                                                    <Line type="monotone" dataKey="views" stroke="#0088FE" strokeWidth={2} activeDot={{ r: 6 }} />
+                                                    <Line type="monotone" dataKey="uniqueVisitors" stroke="#00C49F" strokeWidth={2} />
+                                                </LineChart>
+                                            ) : (
+                                                <div className="h-full w-full flex items-center justify-center">
+                                                    <p className="text-gray-500">No page view data available</p>
+                                                </div>
+                                            )}
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            
+                            
+                        </>
+                    )}
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Traffic Sources</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={trafficSourcesData}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            outerRadius="70%"
-                                            fill="#8884d8"
-                                            dataKey="value"
-                                            label={({  percent }) => `${(percent * 100).toFixed(0)}%`}
-                                        >
-                                            {trafficSourcesData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend wrapperStyle={{ fontSize: '10px' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Active Sessions</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={userSessionData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                                        <YAxis tick={{ fontSize: 10 }} />
-                                        <Tooltip />
-                                        <Area type="monotone" dataKey="activeSessions" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <>
+                            <ChartSkeleton />
+                            <ChartSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-base">Traffic Sources</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0 sm:p-2">
+                                    <div className="h-48 sm:h-64 md:h-80">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            {trafficSourcesData.length > 0 ? (
+                                                <PieChart>
+                                                    <Pie
+                                                        data={trafficSourcesData}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        labelLine={false}
+                                                        outerRadius="70%"
+                                                        fill="#8884d8"
+                                                        dataKey="value"
+                                                        label={({  percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                    >
+                                                        {trafficSourcesData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip />
+                                                    <Legend wrapperStyle={{ fontSize: '10px' }} />
+                                                </PieChart>
+                                            ) : (
+                                                <div className="h-full w-full flex items-center justify-center">
+                                                    <p className="text-gray-500">No traffic source data available</p>
+                                                </div>
+                                            )}
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            
+                            
+                        </>
+                    )}
                 </div>
                 
-                <Card className="shadow-md mb-3 sm:mb-6">
-                    <CardHeader className="py-2 px-3 sm:px-4">
-                        <CardTitle className="text-sm sm:text-base">Top Pages</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0 sm:p-2">
-                        <div className="h-40 sm:h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={topPagesData} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis type="number" tick={{ fontSize: 10 }} />
-                                    <YAxis dataKey="page" type="category" width={60} tick={{ fontSize: 10 }} />
-                                    <Tooltip />
-                                    <Bar dataKey="views" fill="#0088FE" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
+                {loading ? (
+                    <ChartSkeleton />
+                ) : (
+                    <Card className="shadow-md mb-3 sm:mb-6">
+                        <CardHeader className="py-2 px-3 sm:px-4">
+                            <CardTitle className="text-sm sm:text-base">Top Pages</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 sm:p-2">
+                            <div className="h-40 sm:h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    {topPagesData.length > 0 ? (
+                                        <BarChart data={topPagesData} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis type="number" tick={{ fontSize: 10 }} />
+                                            <YAxis dataKey="page" type="category" width={60} tick={{ fontSize: 10 }} />
+                                            <Tooltip />
+                                            <Bar dataKey="views" fill="#0088FE" />
+                                        </BarChart>
+                                    ) : (
+                                        <div className="h-full w-full flex items-center justify-center">
+                                            <p className="text-gray-500">No page data available</p>
+                                        </div>
+                                    )}
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Top Countries</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={countryData} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis type="number" tick={{ fontSize: 10 }} />
-                                        <YAxis dataKey="country" type="category" width={60} tick={{ fontSize: 10 }} />
-                                        <Tooltip />
-                                        <Bar dataKey="visitors" fill="#1d4ed8" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <>
+                            <ChartSkeleton />
+                            <ChartSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-base">Top Countries</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0 sm:p-2">
+                                    <div className="h-48 sm:h-64 md:h-80">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            {countryData.length > 0 ? (
+                                                <BarChart data={countryData} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                                                    <YAxis dataKey="country" type="category" width={60} tick={{ fontSize: 10 }} />
+                                                    <Tooltip />
+                                                    <Bar dataKey="visitors" fill="#1d4ed8" />
+                                                </BarChart>
+                                            ) : (
+                                                <div className="h-full w-full flex items-center justify-center">
+                                                    <p className="text-gray-500">No country data available</p>
+                                                </div>
+                                            )}
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Top Referrers</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={referrerData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="site" tick={{ fontSize: 10 }} />
-                                        <YAxis tick={{ fontSize: 10 }} />
-                                        <Tooltip />
-                                        <Bar dataKey="visits" fill="#3b82f6" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <Card className="shadow-md">
+                                <CardHeader className="py-2 px-3 sm:px-4">
+                                    <CardTitle className="text-sm sm:text-base">Top Operating Systems</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0 sm:p-2">
+                                    <div className="h-48 sm:h-64 md:h-80">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            {referrerData.length > 0 ? (
+                                                <BarChart data={referrerData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis dataKey="site" tick={{ fontSize: 10 }} />
+                                                    <YAxis tick={{ fontSize: 10 }} />
+                                                    <Tooltip />
+                                                    <Bar dataKey="visits" fill="#3b82f6" />
+                                                </BarChart>
+                                            ) : (
+                                                <div className="h-full w-full flex items-center justify-center">
+                                                    <p className="text-gray-500">No OS data available</p>
+                                                </div>
+                                            )}
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
-                    <Card className="shadow-md">
-                        <CardHeader className="py-2 px-3 sm:px-4">
-                            <CardTitle className="text-sm sm:text-base">Device Distribution</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-2">
-                            <div className="h-48 sm:h-64 md:h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={deviceData}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            outerRadius="70%"
-                                            fill="#8884d8"
-                                            dataKey="value"
-                                            label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                                        >
-                                            {deviceData.map((entry, index) => (
-                                                <Cell 
-                                                    key={`cell-${index}`} 
-                                                    fill={[
-                                                        '#2563eb',
-                                                        '#3b82f6',
-                                                        '#60a5fa'
-                                                    ][index % 3]} 
-                                                />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend wrapperStyle={{ fontSize: '10px' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <ChartSkeleton />
+                    ) : (
+                        <Card className="shadow-md">
+                            <CardHeader className="py-2 px-3 sm:px-4">
+                                <CardTitle className="text-sm sm:text-base">Device Distribution</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0 sm:p-2">
+                                <div className="h-48 sm:h-64 md:h-80">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {deviceData.length > 0 ? (
+                                            <PieChart>
+                                                <Pie
+                                                    data={deviceData}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    labelLine={false}
+                                                    outerRadius="70%"
+                                                    fill="#8884d8"
+                                                    dataKey="value"
+                                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                >
+                                                    {deviceData.map((entry, index: number) => (
+                                                        <Cell 
+                                                            key={`cell-${index}`} 
+                                                            fill={[
+                                                                '#2563eb',
+                                                                '#3b82f6',
+                                                                '#60a5fa'
+                                                            ][index % 3]} 
+                                                        />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip />
+                                                <Legend wrapperStyle={{ fontSize: '10px' }} />
+                                            </PieChart>
+                                        ) : (
+                                            <div className="h-full w-full flex items-center justify-center">
+                                                <p className="text-gray-500">No device data available</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>
