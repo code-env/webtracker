@@ -52,6 +52,7 @@ export default async function Dashboard(){
                 id: website.id,
                 name: website.name,
                 domain: website.domain || "",
+                description: website.description || "",
                 analytics:{
                   totalPageVisits: website?.analytics?.totalPageVisits || 0,
                   totalVisitors: website?.analytics?.totalVisitors || 0,

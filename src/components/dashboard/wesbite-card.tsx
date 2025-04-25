@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart2, Users, Globe, Trash2 } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ interface WebsiteCardProps {
     id: string;
     name: string;
     domain: string;
+    description: string;
     analytics?: {
       totalVisitors?: number;
       totalPageVisits?: number;
@@ -28,6 +29,7 @@ interface WebsiteCardProps {
 }
 
 export function WebsiteCard({ website }: WebsiteCardProps) {
+  
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const router = useRouter();
@@ -88,25 +90,23 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col space-y-1.5">
-                <span className="text-2xl font-bold tracking-tight text-sky-900">
-                  {website.analytics?.totalVisitors?.toLocaleString() || '0'}
-                </span>
-                <span className="flex items-center text-xs text-sky-600">
-                  <Users className="mr-1 h-3 w-3" />
-                  <span className="font-medium">Total Visitors</span>
-                </span>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <span className="text-2xl font-bold tracking-tight text-sky-900">
-                  {website.analytics?.totalPageVisits?.toLocaleString() || '0'}
-                </span>
-                <span className="flex items-center text-xs text-sky-600">
-                  <BarChart2 className="mr-1 h-3 w-3" />
-                  <span className="font-medium">Total Views</span>
-                </span>
-              </div>
+            <div className="flex flex-col space-y-2">
+              <p className="text-sm text-sky-600">
+                <span className="font-semibold">Domain:</span> {website.domain}
+              </p>
+              <p className="text-sm text-sky-600">
+                <span className="font-semibold">Description:</span> {website.description || 'No description provided'}
+              </p>
+              {website.analytics && (
+                <div className="flex flex-wrap gap-3 mt-2 text-xs">
+                  <div className="bg-sky-100 px-2 py-1 rounded-md text-sky-700">
+                    <span className="font-medium">Visitors:</span> {website.analytics.totalVisitors || 0}
+                  </div>
+                  <div className="bg-sky-100 px-2 py-1 rounded-md text-sky-700">
+                    <span className="font-medium">Page Visits:</span> {website.analytics.totalPageVisits || 0}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="absolute inset-0 -translate-x-full rotate-12 transform bg-gradient-to-r from-transparent via-sky-200/20 to-transparent opacity-0 transition-all duration-1000 group-hover:translate-x-full group-hover:opacity-100" />
           </CardContent>
