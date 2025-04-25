@@ -97,16 +97,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
               <p className="text-sm text-sky-600">
                 <span className="font-semibold">Description:</span> {website.description || 'No description provided'}
               </p>
-              {website.analytics && (
-                <div className="flex flex-wrap gap-3 mt-2 text-xs">
-                  <div className="bg-sky-100 px-2 py-1 rounded-md text-sky-700">
-                    <span className="font-medium">Visitors:</span> {website.analytics.totalVisitors || 0}
-                  </div>
-                  <div className="bg-sky-100 px-2 py-1 rounded-md text-sky-700">
-                    <span className="font-medium">Page Visits:</span> {website.analytics.totalPageVisits || 0}
-                  </div>
-                </div>
-              )}
+              
             </div>
             <div className="absolute inset-0 -translate-x-full rotate-12 transform bg-gradient-to-r from-transparent via-sky-200/20 to-transparent opacity-0 transition-all duration-1000 group-hover:translate-x-full group-hover:opacity-100" />
           </CardContent>
