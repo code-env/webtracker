@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { getDomainAnalytics } from "@/app/actions/db_calls";
 import { Skeleton } from "@/components/ui/skeleton";
+import WorldMap from '@/components/dashboard/worldmap';
 
 // Define interfaces for type safety
 interface Visit {
@@ -545,6 +546,14 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                         </>
                     )}
                 </div>
+
+                <div className="mb-6">
+  {loading ? (
+    <ChartSkeleton />
+  ) : (
+    <WorldMap countryData={analyticsData?.analytics?.countryAnalytics || []} isLoading={loading} />
+  )}
+</div>
             </div>
         </div>
     );
