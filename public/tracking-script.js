@@ -372,18 +372,16 @@
 //     initialize();
 //   })();
 
-// tracker.js
 (function () {
   "use strict";
+  var location = window.location;
+  var document = window.document;
+  var scriptElement = document.currentScript;
+  var dataDomain = scriptElement.getAttribute("data-domain");
 
-  // ---- Config ----
-  const endpoint = "https://webtracker.avikmukherjee.tech/api/track";
-  const sessionDuration = 30 * 60 * 1000; // 30 minutes :contentReference[oaicite:4]{index=4}
-  const dataDomain = document.currentScript.getAttribute("data-domain") || "";
-
-  // ---- UTM Parsing ----
-  const params = new URLSearchParams(window.location.search);
-  const utmParams = {
+  // Enhanced UTM parameter tracking
+  const params = new URLSearchParams(location.search);
+  var utmParams = {
     source: params.get("utm_source"),
     medium: params.get("utm_medium"),
     campaign: params.get("utm_campaign"),
@@ -391,217 +389,207 @@
     content: params.get("utm_content"),
   };
 
-  // ---- Visitor & Session ID ----
+  var endpoint = "https://webtracker.avikmukherjee.tech/api/track";
+  var sessionDuration = 30 * 60 * 1000; // 30 minutes
+
+  // Visitor identification with cross-page persistence
   function getVisitorId() {
-    let id = localStorage.getItem("visitor_id");
-    if (!id) {
-      id = "visitor-" + Math.random().toString(36).substr(2, 16);
-      localStorage.setItem("visitor_id", id);
+    var visitorId = localStorage.getItem("visitor_id");
+    if (!visitorId) {
+      visitorId = "visitor-" + Math.random().toString(36).slice(2, 18);
+      localStorage.setItem("visitor_id", visitorId);
     }
-    return id;
+    return visitorId;
   }
 
-  function generateSessionId() {
-    return "session-" + Math.random().toString(36).substr(2, 9);
-  }
-
-  function isSessionExpired(expiry) {
-    return Date.now() >= expiry;
-  }
-
+  // Session handling with localStorage
   function initializeSession() {
-    let sessionId = sessionStorage.getItem("session_id");
-    let expiry = parseInt(sessionStorage.getItem("session_expiration"), 10);
-    let isNew = false;
+    var sessionId = localStorage.getItem("session_id");
+    var lastActivity = parseInt(localStorage.getItem("last_activity")) || Date.now();
+    var isNewSession = false;
 
-    if (!sessionId || !expiry || isSessionExpired(expiry)) {
-      sessionId = generateSessionId();
-      expiry = Date.now() + sessionDuration;
-      sessionStorage.setItem("session_id", sessionId);
-      sessionStorage.setItem("session_expiration", expiry);
-      trackSessionStart();
-      isNew = true;
-    } else {
-      // extend session
-      sessionStorage.setItem("session_expiration", Date.now() + sessionDuration);
+    // Reset session if new tab/window
+    if(performance.navigation.type === 0 && !sessionId) {
+      sessionId = null;
     }
-    return { sessionId, isNew };
+
+    if (!sessionId || (Date.now() - lastActivity) > sessionDuration) {
+      sessionId = "session-" + Math.random().toString(36).slice(2, 12);
+      localStorage.setItem("session_id", sessionId);
+      isNewSession = true;
+    }
+
+    localStorage.setItem("last_activity", Date.now().toString());
+
+    if (isNewSession) {
+      trackSessionStart();
+    }
+
+    return {
+      sessionId: sessionId,
+      isNewSession: isNewSession
+    };
   }
 
-  // ---- Throttle Utility ----
-  function throttle(fn, limit) {
+  // Enhanced SPA navigation handling
+  var currentPath = location.pathname + location.search + location.hash;
+  var lastHistoryState = history.state;
+  
+  function handleUrlChange() {
+    requestAnimationFrame(() => {
+      const newPath = location.pathname + location.search + location.hash;
+      if (newPath !== currentPath || history.state !== lastHistoryState) {
+        currentPath = newPath;
+        lastHistoryState = history.state;
+        trackPageView();
+      }
+    });
+  }
+
+  // Override history methods
+  const originalPushState = history.pushState;
+  const originalReplaceState = history.replaceState;
+  
+  history.pushState = function(state, title, url) {
+    originalPushState.apply(this, arguments);
+    handleUrlChange();
+  };
+  
+  history.replaceState = function(state, title, url) {
+    originalReplaceState.apply(this, arguments);
+    handleUrlChange();
+  };
+  
+  window.addEventListener("popstate", handleUrlChange);
+  window.addEventListener("hashchange", handleUrlChange);
+
+  // Tracking core
+  function trigger(eventName, eventData, options = {}) {
+    const session = initializeSession();
+    const payload = {
+      event: eventName,
+      url: location.href,
+      path: location.pathname,
+      domain: dataDomain,
+      referrer: document.referrer,
+      title: document.title,
+      utm: utmParams,
+      screen: {
+        width: screen.width,
+        height: screen.height,
+      },
+      language: navigator.language,
+      user_agent: navigator.userAgent,
+      visitor_id: getVisitorId(),
+      session_id: session.sessionId,
+      timestamp: new Date().toISOString(),
+      data: eventData || {},
+    };
+
+    // Enhanced beacon handling
+    try {
+      if (navigator.sendBeacon && !options.forceXHR) {
+        const blob = new Blob([JSON.stringify(payload)], {type: 'application/json'});
+        navigator.sendBeacon(endpoint, blob);
+      } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', endpoint, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(payload));
+      }
+    } catch (e) {
+      console.error('Tracking error:', e);
+    }
+  }
+
+  // Public API
+  window.your_tracking = {
+    pageview: (data) => trigger('pageview', data),
+    event: (category, action, label, value) => 
+      trigger('event', { category, action, label, value }),
+    timing: (category, variable, time, label) => 
+      trigger('timing', { category, variable, time, label }),
+    
+    // Debugging helpers
+    getVisitorId: () => getVisitorId(),
+    getSessionId: () => localStorage.getItem("session_id"),
+  };
+
+  // Initial page load tracking
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.visibilityState === 'prerender') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          trackPageView();
+        }
+      });
+    } else {
+      trackPageView();
+    }
+  });
+
+  // Session renewal on activity
+  function trackActivity() {
+    localStorage.setItem("last_activity", Date.now().toString());
+  }
+  
+  ['click', 'touchstart', 'keydown', 'mousemove', 'scroll'].forEach(event => {
+    window.addEventListener(event, throttle(trackActivity, 5000), { passive: true });
+  });
+
+  // Enhanced performance tracking
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      if (window.performance) {
+        const [entry] = performance.getEntriesByType('navigation');
+        trigger('performance', {
+          type: 'page_load',
+          duration: entry.duration,
+          dom_content_loaded: entry.domContentLoadedEventEnd,
+          time_to_interactive: entry.domInteractive,
+        });
+      }
+    }, 0);
+  });
+
+  // Outbound link tracking
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+    
+    const href = link.href;
+    if (!href || href.startsWith('javascript:')) return;
+    
+    try {
+      const url = new URL(href);
+      if (url.hostname !== location.hostname) {
+        trigger('outbound_click', {
+          url: href,
+          text: link.innerText,
+          target: link.target || '_self',
+        });
+        
+        // Prevent immediate navigation for beacon
+        if (!link.target || link.target === '_self') {
+          e.preventDefault();
+          setTimeout(() => (location.href = href), 150);
+        }
+      }
+    } catch {}
+  });
+
+  // Throttle function
+  function throttle(fn, wait) {
     let last = 0;
-    return function () {
+    return function(...args) {
       const now = Date.now();
-      if (now - last >= limit) {
+      if (now - last >= wait) {
         last = now;
-        fn.apply(this, arguments);
+        fn.apply(this, args);
       }
     };
   }
 
-  // ---- Core Trigger Function ----
-  function trigger(eventName, eventData = {}, options = {}) {
-    const { sessionId } = initializeSession();
-    const visitorId = getVisitorId();
-    const ref = document.referrer
-      ? new URL(document.referrer).hostname
-      : "direct";
-
-    const payload = {
-      event: eventName,
-      domain: dataDomain,
-      url: window.location.href,
-      path: window.location.pathname,
-      title: document.title,
-      referrer: document.referrer,
-      source: ref,
-      utm: utmParams,
-      visitor_id: visitorId,
-      session_id: sessionId,
-      timestamp: new Date().toISOString(),
-      screen: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      },
-      language: navigator.language,
-      user_agent: navigator.userAgent,
-      data: eventData,
-    };
-
-    // JSON-blob for correct Content-Type :contentReference[oaicite:5]{index=5}
-    if (navigator.sendBeacon && !options.forceXHR) {
-      const blob = new Blob([JSON.stringify(payload)], {
-        type: "application/json",
-      });
-      navigator.sendBeacon(endpoint, blob);
-      if (options.callback) options.callback();
-    } else {
-      // fallback to XHR
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", endpoint, true);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && options.callback) {
-          options.callback();
-        }
-      };
-      xhr.send(JSON.stringify(payload));
-    }
-  }
-
-  // ---- Event Helpers ----
-  function trackSessionStart() {
-    trigger("session_start", {
-      landing_page: window.location.href,
-    });
-  }
-
-  function trackPageView(customData = {}) {
-    trigger("pageview", customData);
-  }
-
-  function trackSessionEnd() {
-    const sid = sessionStorage.getItem("session_id");
-    if (sid) {
-      const start = parseInt(sessionStorage.getItem("session_expiration"), 10) - sessionDuration;
-      const duration = Date.now() - start;
-      trigger("session_end", { duration }, { forceXHR: true });
-    }
-  }
-
-  // ---- User Activity to Keep Session Alive ----
-  ["mousedown", "keydown", "touchstart", "scroll"].forEach((evt) => {
-    document.addEventListener(
-      evt,
-      throttle(() => initializeSession(), 5000),
-      { passive: true }
-    );
-  });
-
-  // ---- Outbound & Download Clicks ----
-  document.addEventListener("click", (evt) => {
-    const a = evt.target.closest("a");
-    if (!a) return;
-    const href = a.href || "";
-    const isOutbound = /^https?:\/\//.test(href) && !href.includes(location.hostname);
-    const isDownload = /\.(pdf|zip|docx?|xlsx?|pptx?|rar|tar|gz|exe)$/i.test(href);
-
-    if (isOutbound) {
-      trigger("outbound_click", { url: href, text: a.innerText });
-    }
-    if (isDownload) {
-      trigger("download", { file: href, name: href.split("/").pop() });
-    }
-  });
-
-  // ---- Form Submissions ----
-  document.addEventListener("submit", (evt) => {
-    const f = evt.target;
-    if (f && f.tagName === "FORM") {
-      trigger("form_submit", {
-        form_id: f.id || f.name || "unknown",
-        form_action: f.action,
-      });
-    }
-  });
-
-  // ---- Performance Metrics ----
-  function trackPerformance() {
-    if (!window.performance || !performance.timing) return;
-    const t = performance.timing;
-    const perf = {
-      load_time: t.loadEventEnd - t.navigationStart,
-      dom_ready: t.domContentLoadedEventEnd - t.navigationStart,
-      network_latency: t.responseEnd - t.requestStart,
-    };
-    setTimeout(() => trigger("performance", perf), 0);
-  }
-
-  // ---- SPA Navigation Tracking ---- :contentReference[oaicite:6]{index=6}
-  const origPush = history.pushState;
-  history.pushState = function () {
-    origPush.apply(this, arguments);
-    trackPageView();
-  };
-
-  const origReplace = history.replaceState;
-  history.replaceState = function () {
-    origReplace.apply(this, arguments);
-    trackPageView();
-  };
-
-  window.addEventListener("popstate", trackPageView);
-
-  // ---- Scroll Depth ----
-  const depthMarkers = [25, 50, 75, 90];
-  const hit = {};
-  window.addEventListener(
-    "scroll",
-    throttle(() => {
-      const sc = window.pageYOffset || document.documentElement.scrollTop;
-      const sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const pct = Math.round((sc / sh) * 100);
-      depthMarkers.forEach((m) => {
-        if (pct >= m && !hit[m]) {
-          hit[m] = true;
-          trigger("scroll_depth", { depth: m });
-        }
-      });
-    }, 1000)
-  );
-
-  // ---- Unload Handling ----
-  window.addEventListener("beforeunload", () => {
-    sessionStorage.setItem("last_activity", Date.now().toString());
-    trackSessionEnd();
-  });
-
-  // ---- Initialization ----
-  if (document.readyState === "complete") {
-    trackPerformance();
-  } else {
-    window.addEventListener("load", trackPerformance);
-  }
-  trackPageView();
+  // Initial session setup
+  initializeSession();
 })();
