@@ -289,16 +289,16 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                                 </CardContent>
                             </Card>
                             
-                            <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-purple-50 to-white">
+                            <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
                                 <CardHeader className="pb-2 px-4">
-                                    <CardTitle className="text-lg flex items-center text-purple-700">
-                                        <Globe className="h-5 w-5 mr-2 text-purple-500" />
+                                    <CardTitle className="text-lg flex items-center text-blue-700">
+                                        <Globe className="h-5 w-5 mr-2 text-blue-500" />
                                         Audience Reach
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="px-4">
-                                    <div className="text-3xl font-bold text-purple-600">{countryData.length > 0 ? countryData.length.toLocaleString() : 0} Countries</div>
-                                    <div className="text-sm text-purple-500 font-medium mt-1">Global audience distribution</div>
+                                    <div className="text-3xl font-bold text-blue-600">{countryData.length > 0 ? countryData.length.toLocaleString() : 0} Countries</div>
+                                    <div className="text-sm text-blue-500 font-medium mt-1">Global audience distribution</div>
                                 </CardContent>
                             </Card>
                         </>
