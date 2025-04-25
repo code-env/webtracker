@@ -24,7 +24,7 @@ export default function SignIn() {
               "use server";
               await signIn("google", {
                 redirectTo: "/dashboard",
-                redirect: true,
+              
               });
             }}
           >
