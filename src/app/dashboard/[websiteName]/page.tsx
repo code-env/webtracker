@@ -123,11 +123,11 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
         if (!analyticsData?.analytics?.routeAnalytics?.length) return [];
         
         return analyticsData.analytics.routeAnalytics
-            .sort((a: RouteAnalytics, b: RouteAnalytics) => b.visitors - a.visitors)
+            .sort((a: RouteAnalytics, b: RouteAnalytics) => b.pageVisits - a.pageVisits)
             .slice(0, 5)
             .map((route: RouteAnalytics) => ({
                 page: route.route,
-                views: route.visitors
+                views: route.pageVisits
             }));
     };
     
