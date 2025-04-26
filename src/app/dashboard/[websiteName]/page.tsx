@@ -186,7 +186,6 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     const deviceData: PieChartData[] = formatDeviceData();
     const referrerData: OsChartData[] = formatOSData();
 
-    console.log("Analytics Data:", trafficSourcesData);
     
     // Enhanced color palette
     const COLORS = {
