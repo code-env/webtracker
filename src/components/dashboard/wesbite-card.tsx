@@ -17,7 +17,7 @@ import {
 
 interface WebsiteCardProps {
   website: {
-    id: string;
+    id: number;
     name: string;
     domain: string;
     description: string;
