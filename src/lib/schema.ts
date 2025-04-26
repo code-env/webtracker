@@ -10,6 +10,7 @@ import {
   varchar,
   index,
   uniqueIndex,
+  serial,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import type { AdapterAccountType } from "next-auth/adapters"
@@ -19,7 +20,7 @@ export const deviceTypeEnum = pgEnum("DeviceType", ["DESKTOP", "MOBILE", "TABLET
 
 // Users table
 export const users = pgTable("user", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: serial("id").primaryKey(),
   name: text("name"),
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
@@ -31,11 +32,11 @@ export const users = pgTable("user", {
 
 // Projects table
 export const projects = pgTable("project", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: serial("id").primaryKey(),
   domain: text("domain").unique(),
   name: text("name").notNull(),
   description: text("description"),
-  ownerId: text("ownerId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ownerId: integer("ownerId").notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().$onUpdate(() => new Date()),
 }, (table) => ({
@@ -44,8 +45,8 @@ export const projects = pgTable("project", {
 
 // Analytics table
 export const analytics = pgTable("analytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  projectId: text("projectId").unique().references(() => projects.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  projectId: integer("projectId").unique().references(() => projects.id, { onDelete: "cascade" }),
   totalPageVisits: integer("totalPageVisits").default(0),
   totalVisitors: integer("totalVisitors").default(0),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
@@ -54,8 +55,8 @@ export const analytics = pgTable("analytics", {
 
 // VisitData table
 export const visitData = pgTable("visitData", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   date: date("date").notNull(),
   pageVisits: integer("pageVisits").default(0),
   visitors: integer("visitors").default(0),
@@ -67,8 +68,8 @@ export const visitData = pgTable("visitData", {
 
 // RouteAnalytics table
 export const routeAnalytics = pgTable("routeAnalytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   route: text("route").notNull(),
   visitors: integer("visitors").default(0),
   pageVisits: integer("pageVisits").default(0),
@@ -79,8 +80,8 @@ export const routeAnalytics = pgTable("routeAnalytics", {
 
 // CountryAnalytics table
 export const countryAnalytics = pgTable("countryAnalytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   countryCode: varchar("countryCode", { length: 2 }).notNull(),
   countryName: text("countryName").notNull(),
   visitors: integer("visitors").default(0),
@@ -91,8 +92,8 @@ export const countryAnalytics = pgTable("countryAnalytics", {
 
 // DeviceAnalytics table
 export const deviceAnalytics = pgTable("deviceAnalytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   deviceType: deviceTypeEnum("deviceType").notNull(),
   visitors: integer("visitors").default(0),
 }, (table) => ({
@@ -102,8 +103,8 @@ export const deviceAnalytics = pgTable("deviceAnalytics", {
 
 // OSAnalytics table
 export const osAnalytics = pgTable("osAnalytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   osName: text("osName").notNull(),
   visitors: integer("visitors").default(0),
 }, (table) => ({
@@ -113,8 +114,8 @@ export const osAnalytics = pgTable("osAnalytics", {
 
 // SourceAnalytics table
 export const sourceAnalytics = pgTable("sourceAnalytics", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  analyticsId: text("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
   sourceName: text("sourceName").notNull(),
   visitors: integer("visitors").default(0),
 }, (table) => ({
@@ -126,7 +127,7 @@ export const sourceAnalytics = pgTable("sourceAnalytics", {
 export const accounts = pgTable(
   "account",
   {
-    userId: text("userId")
+    userId: integer("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     type: text("type").$type<AdapterAccountType>().notNull(),
@@ -152,7 +153,7 @@ export const accounts = pgTable(
 // Sessions table (auth)
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
-  userId: text("userId")
+  userId: integer("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
@@ -180,7 +181,7 @@ export const authenticators = pgTable(
   "authenticator",
   {
     credentialID: text("credentialID").notNull().unique(),
-    userId: text("userId")
+    userId: integer("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     providerAccountId: text("providerAccountId").notNull(),
@@ -197,14 +198,13 @@ export const authenticators = pgTable(
   })
 )
 
-
 // BugReport table
 export const bugReports = pgTable("bugReport", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   status: text("status").default("inReview"),
-  ownerId: text("ownerId").notNull().references(() => users.id),
+  ownerId: integer("ownerId").notNull().references(() => users.id),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().$onUpdate(() => new Date()),
 })
