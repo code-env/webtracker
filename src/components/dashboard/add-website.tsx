@@ -24,11 +24,11 @@ export default function AddWebsite() {
   const [error, setError] = useState("");
 
   // Set the name automatically when website changes
-  useEffect(() => {
-    if (!name || name === "") {
-      setName(website);
-    }
-  }, [website, name]);
+  // useEffect(() => {
+  //   if (!name || name === "") {
+  //     setName(website);
+  //   }
+  // }, [website, name]);
 
   const addWebsite = async () => {
     if (website.trim() === "" || loading) return;
