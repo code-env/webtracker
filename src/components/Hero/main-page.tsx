@@ -173,7 +173,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Button asChild size="lg" className="bg-blue-600">
-                <Link href="/auth/register">
+                <Link href="/auth">
                   Start Tracking Now
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

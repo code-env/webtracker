@@ -28,7 +28,7 @@ export default auth((req) => {
     return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
 
   if (!isAuthenticated && !isAuthRoute)
-    return NextResponse.redirect(new URL("/signin", nextUrl));
+    return NextResponse.redirect(new URL("/auth", nextUrl));
 });
 
 export const config = {
