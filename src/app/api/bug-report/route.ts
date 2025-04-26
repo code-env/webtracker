@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         const bugReportsSubmission = await db.insert(bugReports).values({
             title: title,
             description: description,
-            ownerId: session.user.id
+            ownerId: Number(session.user.id)
         });
 
         revalidatePath("/settings/bug-reports");
@@ -68,7 +68,7 @@ export async function GET(){
             .from(bugReports)
             .where(
                 and(
-                eq(bugReports.ownerId, session.user.id),
+                eq(bugReports.ownerId, Number(session.user.id)),
                 not(eq(bugReports.status, "inReview"))
                 )
             )
