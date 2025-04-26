@@ -50,7 +50,7 @@ export async function POST(req: Request){
             domain: values.domain,
             name: values.name,
             description: values.description,
-            ownerId: parseInt(session.user.id),
+            ownerId: session.user.id,
           })
 
           revalidatePath("/projects");

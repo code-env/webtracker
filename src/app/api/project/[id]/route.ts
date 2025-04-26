@@ -38,7 +38,7 @@ export async function DELETE(
 
     const deletedProject = await db
       .delete(projects)
-      .where(and(eq(projects.id, Number(id)), eq(projects.ownerId, Number(session.user.id))));
+      .where(and(eq(projects.id, Number(id)), eq(projects.ownerId, session.user.id)));
     if (deletedProject.count === 0) {
       return NextResponse.json(
         { message: "Project not found", success: false },
@@ -117,7 +117,7 @@ export async function PATCH(
                 name: values.name,
                 description: values.description,
             })
-            .where(and(eq(projects.id, Number(id)), eq(projects.ownerId, Number(session.user.id))));
+            .where(and(eq(projects.id, Number(id)), eq(projects.ownerId, session.user.id)));
         revalidatePath("/projects");
         revalidateTag("projects");
 
