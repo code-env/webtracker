@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AUTH_ROUTES, PUBLIC_ROUTES, DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { auth } from "./auth";
 
-export default auth((req: any) => {
+export default auth((req) => {
   const { nextUrl } = req;
   const isAuthenticated = !!req.auth;
 
