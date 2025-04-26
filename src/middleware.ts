@@ -24,8 +24,6 @@ export default auth((req) => {
     return NextResponse.next(); // Allow the request to proceed
   }
 
-  console.log("isAuthRoute", nextUrl.pathname.startsWith("/dashboard"));
-
   if (isAuthRoute && isAuthenticated)
     return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
 

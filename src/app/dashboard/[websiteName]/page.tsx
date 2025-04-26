@@ -109,8 +109,6 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
         fetchAnalyticsData();
     }, [websiteName]);
 
-
-    console.log("Analytics Data:", analyticsData);
     
     // Format source analytics data for pie chart
     const formatSourceData = (): PieChartData[] => {
