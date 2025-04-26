@@ -1,43 +1,40 @@
-import React from "react";
-import { signIn } from "@/auth";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { signIn } from "@/auth"
+import Link from "next/link"
 
 export default function SignIn() {
   return (
-    <div className="relative min-h-screen bg-background flex items-center justify-center px-4 py-12 overflow-hidden">
-     
-      
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 md:p-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Left side - Text content */}
+        <div className="flex flex-col justify-center space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-5xl md:text-7xl font-bold text-slate-800">WebTracker</h1>
+            <h2 className="text-5xl md:text-7xl font-bold text-blue-500">.sign in</h2>
+          </div>
 
-      <Card className="w-full max-w-md mx-auto bg-background backdrop-blur-md border border-blue-800/50 rounded-xl shadow-xl transition-all duration-300 hover:shadow-blue-700/30 hover:border-blue-700/50">
-        <CardHeader className="space-y-2 text-center">
-          <CardTitle className="text-2xl font-bold text-blue-500 animate-fade-in-down">
-            Welcome
-          </CardTitle>
-          <p className="text-blue-500 animate-fade-in transition-all duration-500">
-            Sign in to access your WebTracker account
-          </p>
-        </CardHeader>
-        <CardContent className="grid gap-6">
+          <div className="space-y-4 mt-8">
+            <p className="text-xl text-slate-700">Track your Projects with ease.</p>
+            <p className="text-xl text-slate-700">No limits</p>
+            <p className="text-xl text-slate-700">
+              Completely <span className="font-medium">private data</span>
+            </p>
+            
+          </div>
+        </div>
+
+        {/* Right side - Sign in buttons */}
+        <div className="flex flex-col justify-center space-y-4">
           <form
             action={async () => {
-              "use server";
+              "use server"
               await signIn("google", {
-                redirectTo: "/dashboard",
-              
-              });
+                callbackUrl: "/dashboard",
+              })
             }}
           >
-            <Button
+            <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 
-                    bg-blue-600 text-white 
-                    hover:bg-blue-500 
-                    border border-blue-500/50
-                    transition-all duration-300
-                    hover:shadow-md hover:shadow-blue-500/20
-                    focus:ring-2 focus:ring-blue-400
-                    rounded-lg py-2 px-4"
+              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-slate-800 border border-gray-300 rounded-full py-3 px-4 transition-all duration-200"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -57,11 +54,25 @@ export default function SignIn() {
                   fill="#EA4335"
                 />
               </svg>
-              <span className="text-white">Sign in with Google</span>
-            </Button>
+              <span className="text-slate-800 font-medium">Sign in with Google</span>
+            </button>
           </form>
-        </CardContent>
-      </Card>
+
+          
+
+          <div className="text-center text-sm text-slate-600 mt-4">
+            By signing up, I agree to the WebTracker{" "}
+            <Link href="/privacy-policy" className="text-blue-500 hover:underline">
+              privacy policy
+            </Link>{" "}
+            and{" "}
+            <Link href="/terms-of-service" className="text-blue-500 hover:underline">
+              terms of service
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+

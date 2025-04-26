@@ -9,7 +9,7 @@ import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 import HeroAnimation from "./hero-animation"
 import { FeatureCard } from "./feature-card";
-import { TestimonialCard } from "./testimonial";
+// import { TestimonialCard } from "./testimonial";
 import { PricingCard } from "./pricing-card";
 import { FAQSection } from "./fqa";
 
@@ -46,23 +46,23 @@ const Features = [
     }
 ]
 
-const testimonials = [
-    {
-      quote: "WebTracker has transformed how we understand our users. The real-time analytics are a game-changer.",
-      author: "Sarah Johnson",
-      role: "Product Manager at TechCorp"
-    },
-    {
-      quote: "The privacy-focused approach and powerful features make this the perfect analytics solution for us.",
-      author: "Michael Chen",
-      role: "CEO at StartupX"
-    },
-    {
-      quote: "Setup was incredibly easy and the insights we get are invaluable. Highly recommended!",
-      author: "Emily Brown",
-      role: "Developer at WebFlow"
-    }
-  ]
+// const testimonials = [
+//     {
+//       quote: "WebTracker has transformed how we understand our users. The real-time analytics are a game-changer.",
+//       author: "Sarah Johnson",
+//       role: "Product Manager at TechCorp"
+//     },
+//     {
+//       quote: "The privacy-focused approach and powerful features make this the perfect analytics solution for us.",
+//       author: "Michael Chen",
+//       role: "CEO at StartupX"
+//     },
+//     {
+//       quote: "Setup was incredibly easy and the insights we get are invaluable. Highly recommended!",
+//       author: "Emily Brown",
+//       role: "Developer at WebFlow"
+//     }
+//   ]
 
   const pricingPlans = [
     {
@@ -227,7 +227,7 @@ export default function HeroSection() {
           </div>
         </section>
 
-        <section className="py-20" id="testimonials">
+        {/* <section className="py-20" id="testimonials">
       <div className="container">
         <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
           Loved by Developers
@@ -242,7 +242,7 @@ export default function HeroSection() {
           ))}
         </div>
       </div>
-    </section>
+    </section> */}
 
     <section className="py-20" id="pricing">
   <div className="container">

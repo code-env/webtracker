@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import { ChartBar } from "lucide-react";
 
@@ -69,12 +68,12 @@ export default function Footer() {
               <h3 className="font-semibold mb-4 text-blue-900">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/" className="text-blue-600 hover:text-blue-800">
+                  <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-800">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-blue-600 hover:text-blue-800">
+                  <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-800">
                     Terms of Service
                   </Link>
                 </li>
