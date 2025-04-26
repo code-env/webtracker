@@ -24,13 +24,19 @@ export default auth((req) => {
     return NextResponse.next(); // Allow the request to proceed
   }
 
+  console.log("isAuthRoute", nextUrl.pathname.startsWith("/dashboard"));
+
   if (isAuthRoute && isAuthenticated)
     return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
 
-  if (!isAuthenticated && !isAuthRoute)
+  if (!isAuthenticated && !isAuthRoute && nextUrl.pathname.startsWith('/dashboard'))
     return NextResponse.redirect(new URL("/auth", nextUrl));
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!_next|static|favicon.ico|api|tracking-script.js).*)",
+    "/api/:path*",
+    "/dashboard/:path*",
+  ],
 };
