@@ -149,30 +149,27 @@ function getDeviceType(userAgent: string) {
       console.log("========================");
   
       // Get or create analytics record
-      let [analyticsRecord] = await db.select()
-        .from(analytics)
-        .where(eq(analytics.projectId, projectId))
-        .limit(1);
-  
-      if (!analyticsRecord) {
-        // Create new analytics record
-        [analyticsRecord] = await db.insert(analytics)
-          .values({
-            projectId,
-            totalPageVisits: event === "pageview" ? 1 : 0,
-            totalVisitors: event === "session_start" ? 1 : 0,
-          })
-          .returning();
-      } else {
-        // Update existing analytics record
-        await db.update(analytics)
-          .set({
-            totalPageVisits: sql`${analytics.totalPageVisits} + ${event === "pageview" ? 1 : 0}`,
-            totalVisitors: sql`${analytics.totalVisitors} + ${event === "session_start" ? 1 : 0}`,
-            updatedAt: new Date(),
-          })
-          .where(eq(analytics.id, analyticsRecord.id));
-      }
+      const eventPageview   = event === "pageview"   ? 1 : 0;
+      const eventSession    = event === "session_start" ? 1 : 0;
+        
+      const [analyticsRecord] = await db
+        .insert(analytics)
+        .values({
+          projectId,
+          totalPageVisits: eventPageview,
+          totalVisitors:   eventSession,
+        })
+        .onConflictDoUpdate({
+          // target the unique index on projectId
+          target: analytics.projectId,
+          set: {
+            // increment the counters if they already exist
+            totalPageVisits: sql`${analytics.totalPageVisits} + ${eventPageview}`,
+            totalVisitors:   sql`${analytics.totalVisitors}   + ${eventSession}`,
+            updatedAt:       new Date(),
+          },
+        })
+        .returning();  // you'll get back the inserted or updated row
   
       const analyticsId = analyticsRecord.id;
   
