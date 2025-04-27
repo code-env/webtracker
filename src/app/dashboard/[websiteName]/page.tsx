@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BarChart as BarChartIcon, PieChart as PieChartIcon, Globe, Smartphone, Monitor, Clock } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
 
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { getDomainAnalytics } from "@/app/actions/db_calls";
 import { Skeleton } from "@/components/ui/skeleton";
+import Snippet from "@/components/dashboard/snippet";
 
 // Define interfaces for type safety
 interface Visit {
@@ -117,6 +119,7 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     const websiteName = resolvedParams?.websiteName || 'example.com';
     const [loading, setLoading] = useState<boolean>(true);
     const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null | undefined>(null);
+
     
     useEffect(() => {
         const fetchAnalyticsData = async () => {
@@ -136,8 +139,14 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
         fetchAnalyticsData();
     }, [websiteName]);
 
-
-
+    
+    const hasNoData = !loading && 
+        (!analyticsData?.analytics || 
+         (!analyticsData.analytics.countryAnalytics?.length && 
+          !analyticsData.analytics.deviceAnalytics?.length && 
+          !analyticsData.analytics.osAnalytics?.length &&
+          !analyticsData.analytics.sourceAnalytics?.length &&
+          !analyticsData.analytics.routeAnalytics?.length));
 
     const formatCountryData = (): CountryChartData[] => {
         if (!analyticsData?.analytics?.countryAnalytics?.length) return [];
@@ -345,110 +354,216 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                     <p className="text-gray-600">View detailed analytics and insights for your website</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                    {loading ? (
-                        <>
-                            <CardSkeleton />
-                            <CardSkeleton />
-                            <CardSkeleton />
-                        </>
-                    ) : (
-                        <>
-                            <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
-                                <CardHeader className="pb-2 px-4">
-                                    <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />
-                                        Total Page Views
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="px-4">
-                                    <div className="text-3xl font-bold text-blue-600">{calculateTotalPageViews().toLocaleString()}</div>
-                                    <div className="text-sm text-blue-500 font-medium mt-1">Analytics since project creation</div>
-                                </CardContent>
-                            </Card>
-                            
-                            <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
-                                <CardHeader className="pb-2 px-4">
-                                    <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <PieChartIcon className="h-5 w-5 mr-2 text-blue-500" />
-                                        Total Visitors
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="px-4">
-                                    <div className="text-3xl font-bold text-blue-600">{calculateUniqueVisitors().toLocaleString()}</div>
-                                    <div className="text-sm text-blue-500 font-medium mt-1">Analytics since project creation</div>
-                                </CardContent>
-                            </Card>
-                            
-                            <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
-                                <CardHeader className="pb-2 px-4">
-                                    <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Globe className="h-5 w-5 mr-2 text-blue-500" />
-                                        Audience Reach
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="px-4">
-                                    <div className="text-3xl font-bold text-blue-600">{countryData.length > 0 ? countryData.length.toLocaleString() : 0} Countries</div>
-                                    <div className="text-sm text-blue-500 font-medium mt-1">Global audience distribution</div>
-                                </CardContent>
-                            </Card>
-                        </>
-                    )}
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    {loading ? (
-                        <>
+                {hasNoData && !loading && (
+
+                    <div className="bg-transparent p-5 mb-6 mx-auto">
+                       
+                        <Snippet domain={websiteName} title='Could Not find any Analytics Data' description='Add this script to your website to start tracking visitor data.'/>
+                    </div>
+                )}
+
+                {/* Only render analytics if we have data and we're not in loading state */}
+                {!hasNoData && (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                            {loading ? (
+                                <>
+                                    <CardSkeleton />
+                                    <CardSkeleton />
+                                    <CardSkeleton />
+                                </>
+                            ) : (
+                                <>
+                                    <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+                                        <CardHeader className="pb-2 px-4">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                                Total Page Views
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="px-4">
+                                            <div className="text-3xl font-bold text-blue-600">{calculateTotalPageViews().toLocaleString()}</div>
+                                            <div className="text-sm text-blue-500 font-medium mt-1">Analytics since project creation</div>
+                                        </CardContent>
+                                    </Card>
+                                    
+                                    <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+                                        <CardHeader className="pb-2 px-4">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <PieChartIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                                Total Visitors
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="px-4">
+                                            <div className="text-3xl font-bold text-blue-600">{calculateUniqueVisitors().toLocaleString()}</div>
+                                            <div className="text-sm text-blue-500 font-medium mt-1">Analytics since project creation</div>
+                                        </CardContent>
+                                    </Card>
+                                    
+                                    <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+                                        <CardHeader className="pb-2 px-4">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <Globe className="h-5 w-5 mr-2 text-blue-500" />
+                                                Audience Reach
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="px-4">
+                                            <div className="text-3xl font-bold text-blue-600">{countryData.length > 0 ? countryData.length.toLocaleString() : 0} Countries</div>
+                                            <div className="text-sm text-blue-500 font-medium mt-1">Global audience distribution</div>
+                                        </CardContent>
+                                    </Card>
+                                </>
+                            )}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            {loading ? (
+                                <>
+                                    <ChartSkeleton />
+                                    <ChartSkeleton />
+                                </>
+                            ) : (
+                                <>
+                                    <Card className="shadow-md border-0 overflow-hidden">
+                                        <CardHeader className="pb-2 px-4 border-b">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <Globe className="h-5 w-5 mr-2 text-blue-500" />
+                                                Traffic Sources
+                                            </CardTitle>
+                                            <CardDescription>Where your visitors are coming from</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-4">
+                                            <div className="h-72">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    {trafficSourcesData.length > 0 ? (
+                                                        <BarChart 
+                                                            data={trafficSourcesData} 
+                                                            layout="vertical"
+                                                            margin={{ top: 10, right: 30, left: 70, bottom: 10 }}
+                                                        >
+                                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                                            <XAxis type="number" tick={{ fontSize: 12 }} />
+                                                            <YAxis 
+                                                                dataKey="name" 
+                                                                type="category"
+                                                                tick={{ fontSize: 12 }}
+                                                                width={60}
+                                                                tickFormatter={(value) => value.length > 12 ? `${value.substring(0, 10)}...` : value}
+                                                            />
+                                                            <Tooltip content={<CustomTooltip />} />
+                                                            <Bar 
+                                                                dataKey="value" 
+                                                                name="Visitors"
+                                                                fill="#3b82f6" 
+                                                                radius={[0, 4, 4, 0]}
+                                                                barSize={30}
+                                                            >
+                                                                {trafficSourcesData.map((entry, index) => (
+                                                                    <Cell key={`cell-${index}`} fill={COLORS.blue[index % COLORS.blue.length]} />
+                                                                ))}
+                                                            </Bar>
+                                                            <Legend />
+                                                        </BarChart>
+                                                    ) : (
+                                                        <div className="h-full w-full flex items-center justify-center">
+                                                            <p className="text-gray-500 text-center">
+                                                                <span className="block text-4xl mb-2 text-blue-300">📊</span>
+                                                                No traffic source data available
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </ResponsiveContainer>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                    
+                                    <Card className="shadow-md border-0 overflow-hidden">
+                                        <CardHeader className="pb-2 px-4 border-b">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <Smartphone className="h-5 w-5 mr-2 text-blue-500" />
+                                                Device Distribution
+                                            </CardTitle>
+                                            <CardDescription>What devices your visitors use</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-4">
+                                            <div className="h-72">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    {deviceData.length > 0 ? (
+                                                        <PieChart>
+                                                            <Pie
+                                                                data={deviceData}
+                                                                cx="50%"
+                                                                cy="50%"
+                                                                labelLine={false}
+                                                                outerRadius="70%"
+                                                                fill="#8884d8"
+                                                                dataKey="value"
+                                                                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                            >
+                                                                {deviceData.map((entry, index) => (
+                                                                    <Cell 
+                                                                        key={`cell-${index}`} 
+                                                                        fill={COLORS.green[index % COLORS.green.length]} 
+                                                                    />
+                                                                ))}
+                                                            </Pie>
+                                                            <Tooltip content={<CustomTooltip />} />
+                                                            <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+                                                        </PieChart>
+                                                    ) : (
+                                                        <div className="h-full w-full flex items-center justify-center">
+                                                            <p className="text-gray-500 text-center">
+                                                                <span className="block text-4xl mb-2 text-green-300">📱</span>
+                                                                No device data available
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </ResponsiveContainer>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </>
+                            )}
+                        </div>
+                        
+                        {loading ? (
                             <ChartSkeleton />
-                            <ChartSkeleton />
-                        </>
-                    ) : (
-                        <>
-                            <Card className="shadow-md border-0 overflow-hidden">
+                        ) : (
+                            <Card className="shadow-md border-0 overflow-hidden mb-6">
                                 <CardHeader className="pb-2 px-4 border-b">
                                     <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Globe className="h-5 w-5 mr-2 text-blue-500" />
-                                        Traffic Sources
+                                        <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                        Top Pages
                                     </CardTitle>
-                                    <CardDescription>Where your visitors are coming from</CardDescription>
+                                    <CardDescription>Your most visited pages</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4">
-                                    <div className="h-72">
+                                    <div className="h-64">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            {trafficSourcesData.length > 0 ? (
-                                                <BarChart 
-                                                    data={trafficSourcesData} 
-                                                    layout="vertical"
-                                                    margin={{ top: 10, right: 30, left: 70, bottom: 10 }}
-                                                >
+                                            {topPagesData.length > 0 ? (
+                                                <BarChart data={topPagesData} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
                                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                                     <XAxis type="number" tick={{ fontSize: 12 }} />
                                                     <YAxis 
-                                                        dataKey="name" 
-                                                        type="category"
+                                                        dataKey="page" 
+                                                        type="category" 
+                                                        width={120} 
                                                         tick={{ fontSize: 12 }}
-                                                        width={60}
-                                                        tickFormatter={(value) => value.length > 12 ? `${value.substring(0, 10)}...` : value}
+                                                        tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 12)}...` : value}
                                                     />
                                                     <Tooltip content={<CustomTooltip />} />
                                                     <Bar 
-                                                        dataKey="value" 
-                                                        name="Visitors"
+                                                        dataKey="views" 
                                                         fill="#3b82f6" 
                                                         radius={[0, 4, 4, 0]}
                                                         barSize={30}
-                                                    >
-                                                        {trafficSourcesData.map((entry, index) => (
-                                                            <Cell key={`cell-${index}`} fill={COLORS.blue[index % COLORS.blue.length]} />
-                                                        ))}
-                                                    </Bar>
-                                                    <Legend />
+                                                    />
                                                 </BarChart>
                                             ) : (
                                                 <div className="h-full w-full flex items-center justify-center">
                                                     <p className="text-gray-500 text-center">
-                                                        <span className="block text-4xl mb-2 text-blue-300">📊</span>
-                                                        No traffic source data available
+                                                        <span className="block text-4xl mb-2 text-blue-300">📄</span>
+                                                        No page data available
                                                     </p>
                                                 </div>
                                             )}
@@ -456,45 +571,151 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                                     </div>
                                 </CardContent>
                             </Card>
-                            
+                        )}
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            {loading ? (
+                                <>
+                                    <ChartSkeleton />
+                                    <ChartSkeleton />
+                                </>
+                            ) : (
+                                <>
+                                    {/* Performance Card (Replaces the Country Chart) */}
+                                    <Card className="shadow-md border-0 overflow-hidden">
+                                        <CardHeader className="pb-2 px-4 border-b">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <Clock className="h-5 w-5 mr-2 text-blue-500" />
+                                                Performance Metrics
+                                            </CardTitle>
+                                            <CardDescription>Average page load performance</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-4">
+                                            <div className="h-72 flex flex-col justify-center">
+                                                {performanceMetrics.length > 0 ? (
+                                                    <div className="space-y-6">
+                                                        {performanceMetrics.map((metric, index) => (
+                                                            <div key={index} className="space-y-2">
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-gray-700 font-medium">{metric.name}</span>
+                                                                    <span className="text-blue-600 font-bold">{metric.value} {metric.unit}</span>
+                                                                </div>
+                                                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                                                    <div 
+                                                                        className={`${metric.color} h-2.5 rounded-full`} 
+                                                                        style={{ 
+                                                                            width: `${Math.min(100, (metric.value / 1000) * 100)}%`
+                                                                        }}
+                                                                    ></div>
+                                                                </div>
+                                                                <p className="text-xs text-gray-500 mt-1">
+                                                                    {metric.name === "Page Load" && "Total time to fully load the page"}
+                                                                    {metric.name === "DOM Ready" && "Time until DOM is ready to use"}
+                                                                    {metric.name === "Network Latency" && "Time for network requests"}
+                                                                    {metric.name === "Processing Time" && "Time for browser to process content"}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-full w-full flex items-center justify-center">
+                                                        <p className="text-gray-500 text-center">
+                                                            <span className="block text-4xl mb-2 text-blue-300">⏱️</span>
+                                                            No performance data available
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card className="shadow-md border-0 overflow-hidden">
+                                        <CardHeader className="pb-2 px-4 border-b">
+                                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                                <Monitor className="h-5 w-5 mr-2 text-blue-500" />
+                                                Top Operating Systems
+                                            </CardTitle>
+                                            <CardDescription>What systems your visitors use</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-4">
+                                            <div className="h-72">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    {referrerData.length > 0 ? (
+                                                        <BarChart data={referrerData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
+                                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                                            <XAxis 
+                                                                dataKey="site" 
+                                                                tick={{ fontSize: 12 }} 
+                                                                padding={{ left: 10, right: 10 }}
+                                                            />
+                                                            <YAxis tick={{ fontSize: 12 }} />
+                                                            <Tooltip content={<CustomTooltip />} />
+                                                            <Bar 
+                                                                dataKey="visits" 
+                                                                fill="#f59e0b" 
+                                                                radius={[4, 4, 0, 0]}
+                                                                barSize={40}
+                                                            />
+                                                        </BarChart>
+                                                    ) : (
+                                                        <div className="h-full w-full flex items-center justify-center">
+                                                            <p className="text-gray-500 text-center">
+                                                                <span className="block text-4xl mb-2 text-amber-300">💻</span>
+                                                                No OS data available
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </ResponsiveContainer>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </>
+                            )}
+                        </div>
+
+                        <div className="mb-6">
+                          {loading ? (
+                            <ChartSkeleton />
+                          ) : (
                             <Card className="shadow-md border-0 overflow-hidden">
                                 <CardHeader className="pb-2 px-4 border-b">
                                     <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Smartphone className="h-5 w-5 mr-2 text-blue-500" />
-                                        Device Distribution
+                                        <Globe className="h-5 w-5 mr-2 text-blue-500" />
+                                        Visitor Geography
                                     </CardTitle>
-                                    <CardDescription>What devices your visitors use</CardDescription>
+                                    <CardDescription>Distribution of visitors by country</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4">
                                     <div className="h-72">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            {deviceData.length > 0 ? (
+                                            {countryData.length > 0 ? (
                                                 <PieChart>
                                                     <Pie
-                                                        data={deviceData}
+                                                        data={countryData}
                                                         cx="50%"
                                                         cy="50%"
-                                                        labelLine={false}
+                                                        labelLine={true}
                                                         outerRadius="70%"
                                                         fill="#8884d8"
-                                                        dataKey="value"
-                                                        label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                        dataKey="visitors"
+                                                        nameKey="country"
+                                                        label={({country, percent}) => `${country}: ${(percent * 100).toFixed(0)}%`}
                                                     >
-                                                        {deviceData.map((entry, index) => (
-                                                            <Cell 
-                                                                key={`cell-${index}`} 
-                                                                fill={COLORS.green[index % COLORS.green.length]} 
-                                                            />
+                                                        {countryData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={PIECHARTCOLORS[index % PIECHARTCOLORS.length]} />
                                                         ))}
                                                     </Pie>
-                                                    <Tooltip content={<CustomTooltip />} />
+                                                    <Tooltip 
+                                                        formatter={(value, name, props) => [`${value} visitors`, props.payload.country]}
+                                                        content={<CustomTooltip />} 
+                                                    />
                                                     <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                                                 </PieChart>
                                             ) : (
                                                 <div className="h-full w-full flex items-center justify-center">
                                                     <p className="text-gray-500 text-center">
-                                                        <span className="block text-4xl mb-2 text-green-300">📱</span>
-                                                        No device data available
+                                                        <span className="block text-4xl mb-2 text-purple-300">🌎</span>
+                                                        No country data available
                                                     </p>
                                                 </div>
                                             )}
@@ -502,209 +723,10 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                                     </div>
                                 </CardContent>
                             </Card>
-                        </>
-                    )}
-                </div>
-                
-                {loading ? (
-                    <ChartSkeleton />
-                ) : (
-                    <Card className="shadow-md border-0 overflow-hidden mb-6">
-                        <CardHeader className="pb-2 px-4 border-b">
-                            <CardTitle className="text-lg flex items-center text-blue-700">
-                                <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />
-                                Top Pages
-                            </CardTitle>
-                            <CardDescription>Your most visited pages</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="h-64">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    {topPagesData.length > 0 ? (
-                                        <BarChart data={topPagesData} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                            <XAxis type="number" tick={{ fontSize: 12 }} />
-                                            <YAxis 
-                                                dataKey="page" 
-                                                type="category" 
-                                                width={120} 
-                                                tick={{ fontSize: 12 }}
-                                                tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 12)}...` : value}
-                                            />
-                                            <Tooltip content={<CustomTooltip />} />
-                                            <Bar 
-                                                dataKey="views" 
-                                                fill="#3b82f6" 
-                                                radius={[0, 4, 4, 0]}
-                                                barSize={30}
-                                            />
-                                        </BarChart>
-                                    ) : (
-                                        <div className="h-full w-full flex items-center justify-center">
-                                            <p className="text-gray-500 text-center">
-                                                <span className="block text-4xl mb-2 text-blue-300">📄</span>
-                                                No page data available
-                                            </p>
-                                        </div>
-                                    )}
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                          )}
+                        </div>
+                    </>
                 )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    {loading ? (
-                        <>
-                            <ChartSkeleton />
-                            <ChartSkeleton />
-                        </>
-                    ) : (
-                        <>
-                            {/* Performance Card (Replaces the Country Chart) */}
-                            <Card className="shadow-md border-0 overflow-hidden">
-                                <CardHeader className="pb-2 px-4 border-b">
-                                    <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Clock className="h-5 w-5 mr-2 text-blue-500" />
-                                        Performance Metrics
-                                    </CardTitle>
-                                    <CardDescription>Average page load performance</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <div className="h-72 flex flex-col justify-center">
-                                        {performanceMetrics.length > 0 ? (
-                                            <div className="space-y-6">
-                                                {performanceMetrics.map((metric, index) => (
-                                                    <div key={index} className="space-y-2">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-gray-700 font-medium">{metric.name}</span>
-                                                            <span className="text-blue-600 font-bold">{metric.value} {metric.unit}</span>
-                                                        </div>
-                                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                                            <div 
-                                                                className={`${metric.color} h-2.5 rounded-full`} 
-                                                                style={{ 
-                                                                    width: `${Math.min(100, (metric.value / 1000) * 100)}%`
-                                                                }}
-                                                            ></div>
-                                                        </div>
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            {metric.name === "Page Load" && "Total time to fully load the page"}
-                                                            {metric.name === "DOM Ready" && "Time until DOM is ready to use"}
-                                                            {metric.name === "Network Latency" && "Time for network requests"}
-                                                            {metric.name === "Processing Time" && "Time for browser to process content"}
-                                                        </p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="h-full w-full flex items-center justify-center">
-                                                <p className="text-gray-500 text-center">
-                                                    <span className="block text-4xl mb-2 text-blue-300">⏱️</span>
-                                                    No performance data available
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="shadow-md border-0 overflow-hidden">
-                                <CardHeader className="pb-2 px-4 border-b">
-                                    <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Monitor className="h-5 w-5 mr-2 text-blue-500" />
-                                        Top Operating Systems
-                                    </CardTitle>
-                                    <CardDescription>What systems your visitors use</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <div className="h-72">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            {referrerData.length > 0 ? (
-                                                <BarChart data={referrerData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                                    <XAxis 
-                                                        dataKey="site" 
-                                                        tick={{ fontSize: 12 }} 
-                                                        padding={{ left: 10, right: 10 }}
-                                                    />
-                                                    <YAxis tick={{ fontSize: 12 }} />
-                                                    <Tooltip content={<CustomTooltip />} />
-                                                    <Bar 
-                                                        dataKey="visits" 
-                                                        fill="#f59e0b" 
-                                                        radius={[4, 4, 0, 0]}
-                                                        barSize={40}
-                                                    />
-                                                </BarChart>
-                                            ) : (
-                                                <div className="h-full w-full flex items-center justify-center">
-                                                    <p className="text-gray-500 text-center">
-                                                        <span className="block text-4xl mb-2 text-amber-300">💻</span>
-                                                        No OS data available
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </ResponsiveContainer>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </>
-                    )}
-                </div>
-
-                <div className="mb-6">
-                  {loading ? (
-                    <ChartSkeleton />
-                  ) : (
-                    <Card className="shadow-md border-0 overflow-hidden">
-                        <CardHeader className="pb-2 px-4 border-b">
-                            <CardTitle className="text-lg flex items-center text-blue-700">
-                                <Globe className="h-5 w-5 mr-2 text-blue-500" />
-                                Visitor Geography
-                            </CardTitle>
-                            <CardDescription>Distribution of visitors by country</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="h-72">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    {countryData.length > 0 ? (
-                                        <PieChart>
-                                            <Pie
-                                                data={countryData}
-                                                cx="50%"
-                                                cy="50%"
-                                                labelLine={true}
-                                                outerRadius="70%"
-                                                fill="#8884d8"
-                                                dataKey="visitors"
-                                                nameKey="country"
-                                                label={({country, percent}) => `${country}: ${(percent * 100).toFixed(0)}%`}
-                                            >
-                                                {countryData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={PIECHARTCOLORS[index % PIECHARTCOLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip 
-                                                formatter={(value, name, props) => [`${value} visitors`, props.payload.country]}
-                                                content={<CustomTooltip />} 
-                                            />
-                                            <Legend layout="horizontal" verticalAlign="bottom" align="center" />
-                                        </PieChart>
-                                    ) : (
-                                        <div className="h-full w-full flex items-center justify-center">
-                                            <p className="text-gray-500 text-center">
-                                                <span className="block text-4xl mb-2 text-purple-300">🌎</span>
-                                                No country data available
-                                            </p>
-                                        </div>
-                                    )}
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
-                  )}
-                </div>
             </div>
         </div>
     );

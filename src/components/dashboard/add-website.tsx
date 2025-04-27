@@ -143,14 +143,9 @@ export default function AddWebsite() {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-blue-500">Installation Instructions</h3>
-              <p className="text-sm text-blue-400">
-                Add the following tracking script to your website to start collecting analytics:
-              </p>
-            </div>
             
-            <Snippet domain={website.trim()} />
+            
+            <Snippet domain={website.trim()}  title="Installation Instructions" description="Add the following Tracking Script to your website to start collecting analytics"/>
             
             <Button
               onClick={() => router.push(`/dashboard/${website.trim()}`)}
