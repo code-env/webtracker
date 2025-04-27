@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BarChart as BarChartIcon, PieChart as PieChartIcon, Globe, Smartphone, Monitor } from "lucide-react";
+import { ArrowLeft, BarChart as BarChartIcon, PieChart as PieChartIcon, Globe, Smartphone, Monitor, Clock } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -47,6 +47,18 @@ interface OsAnalytics {
     visitors: number;
 }
 
+
+interface PerformanceAnalytics {
+    domReady: number;
+    id: number;
+    loadTime: number;
+    networkLatency: number;
+    processingTime: number;
+    totalTime: number;
+}
+
+
+
 interface Analytics {
     visitHistory: Visit[];
     routeAnalytics: RouteAnalytics[];
@@ -54,6 +66,7 @@ interface Analytics {
     countryAnalytics: CountryAnalytics[];
     deviceAnalytics: DeviceAnalytics[];
     osAnalytics: OsAnalytics[];
+    performanceAnalytics: PerformanceAnalytics[];
     totalPageVisits?: number;
     totalVisitors?: number;
 }
@@ -74,15 +87,25 @@ interface BarChartData {
     views: number;
 }
 
-interface CountryChartData {
-    country: string;
-    visitors: number;
-}
+// interface CountryChartData {
+//     country: string;
+//     visitors: number;
+// }
 
 interface OsChartData {
     site: string;
     visits: number;
 }
+
+interface PerformanceMetric {
+    name: string;
+    value: number;
+    unit: string;
+    color: string;
+}
+
+
+
 
 export default function DashboardPage({ params }: { params: Promise<{ websiteName: string }> }) {
     
@@ -109,6 +132,9 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
         fetchAnalyticsData();
     }, [websiteName]);
 
+
+
+
     
     // Format source analytics data for pie chart
     const formatSourceData = (): PieChartData[] => {
@@ -119,6 +145,7 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
             value: source.visitors
         }));
     };
+
     
     // Format route analytics data for bar chart
     const formatRouteData = (): BarChartData[] => {
@@ -130,19 +157,6 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
             .map((route: RouteAnalytics) => ({
                 page: route.route,
                 views: route.pageVisits
-            }));
-    };
-    
-    // Format country analytics data
-    const formatCountryData = (): CountryChartData[] => {
-        if (!analyticsData?.analytics?.countryAnalytics?.length) return [];
-        
-        return analyticsData.analytics.countryAnalytics
-            .sort((a: CountryAnalytics, b: CountryAnalytics) => b.visitors - a.visitors)
-            .slice(0, 5)
-            .map((country: CountryAnalytics) => ({
-                country: country.countryName,
-                visitors: country.visitors
             }));
     };
     
@@ -169,6 +183,52 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
             }));
     };
 
+    // Calculate performance metrics averages
+    const calculatePerformanceMetrics = (): PerformanceMetric[] => {
+        if (!analyticsData?.analytics?.performanceAnalytics?.length) return [];
+        
+        const perfData = analyticsData.analytics.performanceAnalytics;
+        
+        // Calculate averages
+        const totalCount = perfData.length;
+        const totalTimes = perfData.reduce((acc, curr) => {
+            return {
+                domReady: acc.domReady + curr.domReady,
+                loadTime: acc.loadTime + curr.loadTime,
+                networkLatency: acc.networkLatency + curr.networkLatency,
+                processingTime: acc.processingTime + curr.processingTime,
+                totalTime: acc.totalTime + curr.totalTime
+            };
+        }, { domReady: 0, loadTime: 0, networkLatency: 0, processingTime: 0, totalTime: 0 });
+        
+        return [
+            {
+                name: "Page Load",
+                value: Math.round((totalTimes.loadTime / totalCount) * 100) / 100,
+                unit: "ms",
+                color: "bg-blue-500"
+            },
+            {
+                name: "DOM Ready",
+                value: Math.round((totalTimes.domReady / totalCount) * 100) / 100,
+                unit: "ms",
+                color: "bg-green-500"
+            },
+            {
+                name: "Network Latency",
+                value: Math.round((totalTimes.networkLatency / totalCount) * 100) / 100,
+                unit: "ms",
+                color: "bg-amber-500"
+            },
+            {
+                name: "Processing Time",
+                value: Math.round((totalTimes.processingTime / totalCount) * 100) / 100,
+                unit: "ms",
+                color: "bg-purple-500"
+            }
+        ];
+    };
+
     // Calculate total page views
     const calculateTotalPageViews = (): number => {
         if (!analyticsData?.analytics?.visitHistory) return 0;
@@ -183,9 +243,10 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     
     const trafficSourcesData: PieChartData[] = formatSourceData();
     const topPagesData: BarChartData[] = formatRouteData();
-    const countryData: CountryChartData[] = formatCountryData();
+    const countryData = analyticsData?.analytics?.countryAnalytics || [];
     const deviceData: PieChartData[] = formatDeviceData();
     const referrerData: OsChartData[] = formatOSData();
+    const performanceMetrics: PerformanceMetric[] = calculatePerformanceMetrics();
 
     
     // Enhanced color palette
@@ -463,44 +524,50 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                         </>
                     ) : (
                         <>
+                            {/* Performance Card (Replaces the Country Chart) */}
                             <Card className="shadow-md border-0 overflow-hidden">
                                 <CardHeader className="pb-2 px-4 border-b">
                                     <CardTitle className="text-lg flex items-center text-blue-700">
-                                        <Globe className="h-5 w-5 mr-2 text-blue-500" />
-                                        Top Countries
+                                        <Clock className="h-5 w-5 mr-2 text-blue-500" />
+                                        Performance Metrics
                                     </CardTitle>
-                                    <CardDescription>Visitor distribution by country</CardDescription>
+                                    <CardDescription>Average page load performance</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4">
-                                    <div className="h-72">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            {countryData.length > 0 ? (
-                                                <BarChart data={countryData} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                                    <XAxis type="number" tick={{ fontSize: 12 }} />
-                                                    <YAxis 
-                                                        dataKey="country" 
-                                                        type="category" 
-                                                        width={100} 
-                                                        tick={{ fontSize: 12 }}
-                                                    />
-                                                    <Tooltip content={<CustomTooltip />} />
-                                                    <Bar 
-                                                        dataKey="visitors" 
-                                                        fill="#6d28d9" 
-                                                        radius={[0, 4, 4, 0]}
-                                                        barSize={30}
-                                                    />
-                                                </BarChart>
-                                            ) : (
-                                                <div className="h-full w-full flex items-center justify-center">
-                                                    <p className="text-gray-500 text-center">
-                                                        <span className="block text-4xl mb-2 text-purple-300">🌎</span>
-                                                        No country data available
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </ResponsiveContainer>
+                                    <div className="h-72 flex flex-col justify-center">
+                                        {performanceMetrics.length > 0 ? (
+                                            <div className="space-y-6">
+                                                {performanceMetrics.map((metric, index) => (
+                                                    <div key={index} className="space-y-2">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-gray-700 font-medium">{metric.name}</span>
+                                                            <span className="text-blue-600 font-bold">{metric.value} {metric.unit}</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                                            <div 
+                                                                className={`${metric.color} h-2.5 rounded-full`} 
+                                                                style={{ 
+                                                                    width: `${Math.min(100, (metric.value / 1000) * 100)}%`
+                                                                }}
+                                                            ></div>
+                                                        </div>
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            {metric.name === "Page Load" && "Total time to fully load the page"}
+                                                            {metric.name === "DOM Ready" && "Time until DOM is ready to use"}
+                                                            {metric.name === "Network Latency" && "Time for network requests"}
+                                                            {metric.name === "Processing Time" && "Time for browser to process content"}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="h-full w-full flex items-center justify-center">
+                                                <p className="text-gray-500 text-center">
+                                                    <span className="block text-4xl mb-2 text-blue-300">⏱️</span>
+                                                    No performance data available
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -550,12 +617,12 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                 </div>
 
                 <div className="mb-6">
-  {loading ? (
-    <ChartSkeleton />
-  ) : (
-    <WorldMap countryData={analyticsData?.analytics?.countryAnalytics || []} isLoading={loading} />
-  )}
-</div>
+                  {loading ? (
+                    <ChartSkeleton />
+                  ) : (
+                    <WorldMap countryData={analyticsData?.analytics?.countryAnalytics || []} isLoading={loading} />
+                  )}
+                </div>
             </div>
         </div>
     );

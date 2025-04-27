@@ -33,6 +33,7 @@ export const getDomainAnalytics = async (domain: string) => {
           deviceAnalytics: true,
           osAnalytics: true,
           sourceAnalytics: true,
+          performanceAnalytics: true,
         }
       }
     }
