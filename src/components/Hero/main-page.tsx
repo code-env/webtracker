@@ -36,7 +36,7 @@ const Features = [
     },
     {
         icon: <Zap className="h-10 w-10 text-primary" />,
-        title: "Performance Metrics (Coming Soon)",
+        title: "Performance Metrics",
         description: "Monitor page load times and other performance indicators."
     },
     {
