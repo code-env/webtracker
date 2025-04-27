@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { getDomainAnalytics } from "@/app/actions/db_calls";
 import { Skeleton } from "@/components/ui/skeleton";
-import WorldMap from '@/components/dashboard/worldmap';
 
 // Define interfaces for type safety
 interface Visit {
@@ -17,6 +16,11 @@ interface Visit {
     visitorId: string;
     sessionId?: string;
     url?: string;
+}
+
+interface CountryChartData {
+    country: string;
+    visitors: number;
 }
 
 interface RouteAnalytics {
@@ -135,6 +139,17 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
 
 
 
+    const formatCountryData = (): CountryChartData[] => {
+        if (!analyticsData?.analytics?.countryAnalytics?.length) return [];
+        
+        return analyticsData.analytics.countryAnalytics
+            .sort((a: CountryAnalytics, b: CountryAnalytics) => b.visitors - a.visitors)
+            .slice(0, 5)
+            .map((country: CountryAnalytics) => ({
+                country: country.countryName,
+                visitors: country.visitors
+            }));
+    };
     
     // Format source analytics data for pie chart
     const formatSourceData = (): PieChartData[] => {
@@ -243,7 +258,7 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     
     const trafficSourcesData: PieChartData[] = formatSourceData();
     const topPagesData: BarChartData[] = formatRouteData();
-    const countryData = analyticsData?.analytics?.countryAnalytics || [];
+    const countryData: CountryChartData[] = formatCountryData();
     const deviceData: PieChartData[] = formatDeviceData();
     const referrerData: OsChartData[] = formatOSData();
     const performanceMetrics: PerformanceMetric[] = calculatePerformanceMetrics();
@@ -254,8 +269,20 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
         blue: ['#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'],
         green: ['#065f46', '#047857', '#059669', '#10b981', '#34d399'],
         amber: ['#92400e', '#b45309', '#d97706', '#f59e0b', '#fbbf24'],
-        purple: ['#5b21b6', '#6d28d9', '#7c3aed', '#8b5cf6', '#a78bfa']
+        purple: ['#5b21b6', '#6d28d9', '#7c3aed', '#8b5cf6', '#a78bfa'],
+        yellow: ['#78350f', '#b45309', '#d97706', '#f59e0b', '#fbbf24'],
+        red: ['#991b1b', '#dc2626', '#ef4444', '#fca5a1', '#fee2e2'],
+        gray: ['#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db'],
+        teal: ['#0f766e', '#115e59', '#134e4a', '#164e63', '#1d4ed8'],
+        cyan: ['#0e7490', '#0284c7', '#06b6d4', '#22d3ee', '#67e8f9'],
+        pink: ['#831843', '#db2777', '#ec4899', '#f472b6', '#f9a8d4'],
+        orange: ['#7c2d12', '#c2410c', '#ea580c', '#f97316', '#fdba74'],
+        indigo: ['#3730a3', '#4f46e5', '#6366f1', '#818cf8', '#c7d2fe'],
+        lime: ['#4d7c0f', '#65a30d', '#84cc16', '#a3e635', '#bbf7d0'],
+        emerald: ['#065f46', '#047857', '#059669', '#10b981', '#34d399'],
     };
+
+    const PIECHARTCOLORS = ["#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#3b82f6", "#2563eb", "#1d4ed8", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#3b82f6", "#2563eb", "#1d4ed8", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#3b82f6", "#2563eb", "#1d4ed8", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#3b82f6", "#2563eb", "#1d4ed8"];
 
     // Custom tooltip styles
     const CustomTooltip = ({ active, payload, label }: {
@@ -389,24 +416,34 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                                     <div className="h-72">
                                         <ResponsiveContainer width="100%" height="100%">
                                             {trafficSourcesData.length > 0 ? (
-                                                <PieChart>
-                                                    <Pie
-                                                        data={trafficSourcesData}
-                                                        cx="50%"
-                                                        cy="50%"
-                                                        labelLine={false}
-                                                        outerRadius="70%"
-                                                        fill="#8884d8"
-                                                        dataKey="value"
-                                                        label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                <BarChart 
+                                                    data={trafficSourcesData} 
+                                                    layout="vertical"
+                                                    margin={{ top: 10, right: 30, left: 70, bottom: 10 }}
+                                                >
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                                    <XAxis type="number" tick={{ fontSize: 12 }} />
+                                                    <YAxis 
+                                                        dataKey="name" 
+                                                        type="category"
+                                                        tick={{ fontSize: 12 }}
+                                                        width={60}
+                                                        tickFormatter={(value) => value.length > 12 ? `${value.substring(0, 10)}...` : value}
+                                                    />
+                                                    <Tooltip content={<CustomTooltip />} />
+                                                    <Bar 
+                                                        dataKey="value" 
+                                                        name="Visitors"
+                                                        fill="#3b82f6" 
+                                                        radius={[0, 4, 4, 0]}
+                                                        barSize={30}
                                                     >
                                                         {trafficSourcesData.map((entry, index) => (
                                                             <Cell key={`cell-${index}`} fill={COLORS.blue[index % COLORS.blue.length]} />
                                                         ))}
-                                                    </Pie>
-                                                    <Tooltip content={<CustomTooltip />} />
-                                                    <Legend layout="horizontal" verticalAlign="bottom" align="center" />
-                                                </PieChart>
+                                                    </Bar>
+                                                    <Legend />
+                                                </BarChart>
                                             ) : (
                                                 <div className="h-full w-full flex items-center justify-center">
                                                     <p className="text-gray-500 text-center">
@@ -620,7 +657,52 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
                   {loading ? (
                     <ChartSkeleton />
                   ) : (
-                    <WorldMap countryData={analyticsData?.analytics?.countryAnalytics || []} isLoading={loading} />
+                    <Card className="shadow-md border-0 overflow-hidden">
+                        <CardHeader className="pb-2 px-4 border-b">
+                            <CardTitle className="text-lg flex items-center text-blue-700">
+                                <Globe className="h-5 w-5 mr-2 text-blue-500" />
+                                Visitor Geography
+                            </CardTitle>
+                            <CardDescription>Distribution of visitors by country</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <div className="h-72">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    {countryData.length > 0 ? (
+                                        <PieChart>
+                                            <Pie
+                                                data={countryData}
+                                                cx="50%"
+                                                cy="50%"
+                                                labelLine={true}
+                                                outerRadius="70%"
+                                                fill="#8884d8"
+                                                dataKey="visitors"
+                                                nameKey="country"
+                                                label={({country, percent}) => `${country}: ${(percent * 100).toFixed(0)}%`}
+                                            >
+                                                {countryData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={PIECHARTCOLORS[index % PIECHARTCOLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip 
+                                                formatter={(value, name, props) => [`${value} visitors`, props.payload.country]}
+                                                content={<CustomTooltip />} 
+                                            />
+                                            <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+                                        </PieChart>
+                                    ) : (
+                                        <div className="h-full w-full flex items-center justify-center">
+                                            <p className="text-gray-500 text-center">
+                                                <span className="block text-4xl mb-2 text-purple-300">🌎</span>
+                                                No country data available
+                                            </p>
+                                        </div>
+                                    )}
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
                   )}
                 </div>
             </div>
