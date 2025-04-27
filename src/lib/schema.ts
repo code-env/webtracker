@@ -216,6 +216,24 @@ export const bugReports = pgTable("bugReport", {
   updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().$onUpdate(() => new Date()),
 })
 
+// Performance table
+export const performanceAnalytics = pgTable("performanceAnalytics", {
+  id: serial("id").primaryKey(),
+  analyticsId: integer("analyticsId").references(() => analytics.id, { onDelete: "cascade" }),
+  // Time in milliseconds for various performance metrics
+  loadTime: integer("loadTime"),  // timing.loadEventEnd - timing.navigationStart
+  domReady: integer("domReady"),  // timing.domContentLoadedEventEnd - timing.navigationStart
+  networkLatency: integer("networkLatency"),  // timing.responseEnd - timing.requestStart
+  processingTime: integer("processingTime"),  // timing.domComplete - timing.responseEnd
+  totalTime: integer("totalTime"),  // timing.loadEventEnd - timing.navigationStart
+  // Timestamps
+  date: date("date").notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
+}, (table) => ({
+  analyticsIdx: index("performance_analytics_idx").on(table.analyticsId),
+  dateIdx: index("performance_date_idx").on(table.date),
+}))
+
 // Define relations
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
@@ -247,6 +265,7 @@ export const analyticsRelations = relations(analytics, ({ one, many }) => ({
   deviceAnalytics: many(deviceAnalytics),
   osAnalytics: many(osAnalytics),
   sourceAnalytics: many(sourceAnalytics),
+  performanceAnalytics: many(performanceAnalytics)
 }))
 
 export const visitDataRelations = relations(visitData, ({ one }) => ({
@@ -316,5 +335,12 @@ export const bugReportsRelations = relations(bugReports, ({ one }) => ({
   owner: one(users, {
     fields: [bugReports.ownerId],
     references: [users.id],
+  }),
+}))
+
+export const performanceAnalyticsRelations = relations(performanceAnalytics, ({ one }) => ({
+  analytics: one(analytics, {
+    fields: [performanceAnalytics.analyticsId],
+    references: [analytics.id],
   }),
 }))

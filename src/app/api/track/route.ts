@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deviceTypeEnum } from "@/lib/schema";
+import { deviceTypeEnum, performanceAnalytics } from "@/lib/schema";
 import {UAParser} from "ua-parser-js";
 import {db} from "@/lib/db";
 import { eq, sql } from "drizzle-orm";
@@ -95,6 +95,7 @@ function getDeviceType(userAgent: string) {
         utm,
         referrer,
         path,
+        data
       } = payload;
   
       if (!url.includes(domain)) {
@@ -145,6 +146,7 @@ function getDeviceType(userAgent: string) {
       console.log("Referrer:", referrer);
       console.log("UTM Parameters:", utm);
       console.log("User Agent:", user_agent);
+      console.log("Data:", data);
       console.log("Full Payload:", JSON.stringify(payload, null, 2));
       console.log("========================");
   
@@ -268,6 +270,29 @@ function getDeviceType(userAgent: string) {
             visitors: sql`${sourceAnalytics.visitors} + ${event === "session_start" ? 1 : 0}`,
           },
         });
+
+      
+        if(event === "performance" && data){
+          const { load_time, dom_ready, network_latency, processing_time, total_time } = data;
+      
+      // Get today's date for the performance record
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayISO = today.toISOString();
+      
+      // Insert the performance metrics into the new table
+      await db.insert(performanceAnalytics)
+        .values({
+          analyticsId,
+          loadTime: load_time,
+          domReady: dom_ready,
+          networkLatency: network_latency,
+          processingTime: processing_time,
+          totalTime: total_time,
+          date: todayISO,
+        });
+        
+        }
   
       return NextResponse.json(
         { success: true, event, received: true },
