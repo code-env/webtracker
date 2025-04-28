@@ -29,7 +29,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
   // Handle empty data
   if (data.length === 0) {
     return (
-      <Card className="shadow-md border-0 overflow-hidden">
+      <Card className="shadow-md border border-blue-300 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="pb-2 px-4 border-b">
           <CardTitle className="text-lg flex items-center text-blue-700">
             <Globe className="h-5 w-5 mr-2 text-blue-500" />
@@ -60,7 +60,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
   const longestWord = max(data.map((d) => d.key.length)) || 1;
 
   return (
-    <Card className="shadow-md border-0 overflow-hidden">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
       <CardHeader className="pb-2 px-4 border-b">
         <CardTitle className="text-lg flex items-center text-blue-700">
           <Globe className="h-5 w-5 mr-2 text-blue-500" />

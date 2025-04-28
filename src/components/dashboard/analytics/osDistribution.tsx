@@ -43,7 +43,7 @@ export default function OperatingSystemsChart({
     .range([100, 0]);
 
   return (
-    <Card className="shadow-md border-0 overflow-hidden">
+    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
       <CardHeader className="pb-2 px-4 border-b">
         <CardTitle className="text-lg flex items-center text-blue-700">
           <Monitor className="h-5 w-5 mr-2 text-blue-500" />

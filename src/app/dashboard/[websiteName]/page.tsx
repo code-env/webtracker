@@ -77,7 +77,7 @@ export default async function DashboardPage({
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-5 mb-6">
+        <div className="bg-white rounded-xl shadow-md p-5 mb-6 border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
           <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-2 flex items-center">
             <Globe className="h-7 w-7 mr-3 text-blue-500" />
             Analytics for {data.websiteName}
