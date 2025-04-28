@@ -1,58 +1,11 @@
-// components/dashboard/analytics/operatingSystems.tsx
-"use client";
-
-import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import React, { CSSProperties } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Monitor } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { scaleBand, scaleLinear, max } from "d3";
 import { AnalyticsData, OsChartData } from "@/lib/types";
+import { ClientTooltip, TooltipContent, TooltipTrigger } from "@/components/dashboard/client-tooltip"; // ✅ Imported tooltip components
 
-interface PayloadInterface {
-  value: number;
-  name: string;
-  payload: {
-    osName: string;
-    visitors: number;
-  };
-}
-
-// Custom tooltip component
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: Array<PayloadInterface>;
-  label?: string;
-}) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 shadow-lg rounded-md border border-gray-200">
-        <p className="font-medium text-gray-700">{label}</p>
-        <p className="text-amber-600 font-semibold">{`Visits: ${payload[0].value}`}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
-// Format OS data for the chart
-const formatOSData = (analyticsData: AnalyticsData | null): OsChartData[] => {
+function formatOSData(analyticsData: AnalyticsData | null): OsChartData[] {
   if (!analyticsData?.analytics?.osAnalytics?.length) return [];
 
   return analyticsData.analytics.osAnalytics
@@ -62,7 +15,7 @@ const formatOSData = (analyticsData: AnalyticsData | null): OsChartData[] => {
       site: os.osName,
       visits: os.visitors,
     }));
-};
+}
 
 export default function OperatingSystemsChart({ 
   analyticsData 
@@ -70,6 +23,24 @@ export default function OperatingSystemsChart({
   analyticsData: AnalyticsData | null 
 }) {
   const osData = formatOSData(analyticsData);
+  const minBars = 5;
+
+  const filledData = [
+    ...osData,
+    ...Array.from({ length: Math.max(0, minBars - osData.length) }, (_, i) => ({
+      site: `Empty ${i + 1}`,
+      visits: 0,
+    })),
+  ];
+
+  const xScale = scaleBand()
+    .domain(filledData.map(d => d.site))
+    .range([0, 100])
+    .padding(0.3);
+
+  const yScale = scaleLinear()
+    .domain([0, max(osData.map(d => d.visits)) ?? 0])
+    .range([100, 0]);
 
   return (
     <Card className="shadow-md border-0 overflow-hidden">
@@ -83,47 +54,127 @@ export default function OperatingSystemsChart({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            {osData.length > 0 ? (
-              <BarChart
-                data={osData}
-                margin={{
-                  top: 10,
-                  right: 30,
-                  left: 20,
-                  bottom: 10,
-                }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#f0f0f0"
-                />
-                <XAxis
-                  dataKey="site"
-                  tick={{ fontSize: 12 }}
-                  padding={{ left: 10, right: 10 }}
-                />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="visits"
-                  fill="#f59e0b"
-                  radius={[4, 4, 0, 0]}
-                  barSize={40}
-                />
-              </BarChart>
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <p className="text-gray-500 text-center">
-                  <span className="block text-4xl mb-2 text-amber-300">
-                    💻
-                  </span>
-                  No OS data available
-                </p>
-              </div>
-            )}
-          </ResponsiveContainer>
+        <div
+          className="relative h-72 w-full grid"
+          style={
+            {
+              "--marginTop": "0px",
+              "--marginRight": "25px",
+              "--marginBottom": "56px",
+              "--marginLeft": "25px",
+            } as CSSProperties
+          }
+        >
+          {/* Y axis */}
+          <div
+            className="relative
+              h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+              w-[var(--marginLeft)]
+              translate-y-[var(--marginTop)]
+              overflow-visible
+            "
+          >
+            {yScale
+              .ticks(6)
+              .map(yScale.tickFormat(6, "d"))
+              .map((value, i) => (
+                <div
+                  key={i}
+                  style={{
+                    top: `${yScale(+value)}%`,
+                  }}
+                  className="absolute text-xs tabular-nums -translate-y-1/2 text-gray-300 w-full text-right pr-2"
+                >
+                  {value}
+                </div>
+              ))}
+          </div>
+
+          {/* Chart Area */}
+          <div
+            className="absolute inset-0
+              h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+              w-[calc(100%-var(--marginLeft)-var(--marginRight))]
+              translate-x-[var(--marginLeft)]
+              translate-y-[var(--marginTop)]
+              overflow-visible
+            "
+          >
+            <svg
+              viewBox="0 0 100 100"
+              className="overflow-visible w-full h-full"
+              preserveAspectRatio="none"
+            >
+              {/* Grid lines */}
+              {yScale
+                .ticks(6)
+                .map(yScale.tickFormat(6, "d"))
+                .map((active, i) => (
+                  <g
+                    transform={`translate(0,${yScale(+active)})`}
+                    className="text-gray-300/80 dark:text-gray-800/80"
+                    key={i}
+                  >
+                    <line
+                      x1={0}
+                      x2={100}
+                      stroke="currentColor"
+                      strokeDasharray="6,5"
+                      strokeWidth={0.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </g>
+                ))}
+            </svg>
+
+            {/* X Axis Labels */}
+            {osData.map((entry, i) => {
+              const xPosition = xScale(entry.site)! + xScale.bandwidth() / 2;
+
+              return (
+                <div
+                  key={i}
+                  className="absolute overflow-visible text-gray-400"
+                  style={{
+                    left: `${xPosition}%`,
+                    top: "100%",
+                    transform: "rotate(45deg) translateX(4px) translateY(8px)",
+                  }}
+                >
+                  <div className="absolute text-xs -translate-y-1/2 whitespace-nowrap">
+                    {entry.site.slice(0, 10) + (entry.site.length > 10 ? "..." : "")}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Bars with Tooltip */}
+            {filledData.map((d, index) => {
+              const barWidth = xScale.bandwidth();
+              const barHeight = yScale(0) - yScale(d.visits);
+
+              return (
+                <ClientTooltip key={index}>
+                  <TooltipTrigger>
+                    <div
+                      style={{
+                        width: `${barWidth}%`,
+                        height: `${barHeight}%`,
+                        borderRadius: "6px 6px 0 0",
+                        marginLeft: `${xScale(d.site)}%`,
+                      }}
+                      className="absolute bottom-0 bg-gradient-to-b from-amber-200 to-amber-400 cursor-pointer"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="text-xs font-medium">
+                      {d.site}: {d.visits} visitors
+                    </div>
+                  </TooltipContent>
+                </ClientTooltip>
+              );
+            })}
+          </div>
         </div>
       </CardContent>
     </Card>

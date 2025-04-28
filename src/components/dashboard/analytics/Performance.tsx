@@ -1,6 +1,3 @@
-// components/dashboard/performance-metrics-card.tsx
-"use client";
-
 import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 

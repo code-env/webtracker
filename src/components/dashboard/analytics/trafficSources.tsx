@@ -1,19 +1,8 @@
-// components/dashboard/traffic-sources-chart.tsx
-"use client";
-
+import React, { CSSProperties } from "react";
 import { Globe } from "lucide-react";
+import { scaleBand, scaleLinear, max } from "d3";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import { ClientTooltip, TooltipContent, TooltipTrigger } from "@/components/dashboard/client-tooltip"; // assuming Tooltip.tsx is implemented
 
 interface SourceAnalytics {
   sourceName: string;
@@ -28,48 +17,47 @@ interface AnalyticsData {
   analytics: Analytics;
 }
 
-interface PieChartData {
-  name: string;
-  value: number;
-}
+export default function TrafficSourcesChart({ analyticsData }: { analyticsData: AnalyticsData }) {
+  const data = (analyticsData?.analytics?.sourceAnalytics || [])
+    .map((d) => ({
+      key: d.sourceName,
+      value: d.visitors,
+      color: "from-blue-300 to-blue-400", // You can change color mapping if needed
+    }))
+    .sort((a, b) => b.value - a.value);
 
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number }>;
-  label?: string;
-}
-
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
+  // Handle empty data
+  if (data.length === 0) {
     return (
-      <div className="bg-white p-3 shadow-lg rounded-md border border-gray-200">
-        <p className="font-medium text-gray-700">{label}</p>
-        <p className="text-blue-600 font-semibold">{`${payload[0].name}: ${payload[0].value}`}</p>
-      </div>
+      <Card className="shadow-md border-0 overflow-hidden">
+        <CardHeader className="pb-2 px-4 border-b">
+          <CardTitle className="text-lg flex items-center text-blue-700">
+            <Globe className="h-5 w-5 mr-2 text-blue-500" />
+            Traffic Sources
+          </CardTitle>
+          <CardDescription>Where your visitors are coming from</CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 h-72 flex items-center justify-center">
+          <p className="text-gray-500 text-center">
+            <span className="block text-4xl mb-2 text-blue-300">📊</span>
+            No traffic source data available
+          </p>
+        </CardContent>
+      </Card>
     );
   }
-  return null;
-};
 
-export default function TrafficSourcesChart({ analyticsData }: { analyticsData: AnalyticsData }) {
-  // Colors for charts
-  const COLORS = {
-    blue: ["#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"],
-  };
+  // Scales
+  const yScale = scaleBand()
+    .domain(data.map((d) => d.key))
+    .range([0, 100])
+    .padding(0.175);
 
-  // Format source analytics data
-  const formatSourceData = (): PieChartData[] => {
-    if (!analyticsData?.analytics?.sourceAnalytics?.length) return [];
+  const xScale = scaleLinear()
+    .domain([0, max(data.map((d) => d.value)) ?? 0])
+    .range([0, 100]);
 
-    return analyticsData.analytics.sourceAnalytics.map(
-      (source: SourceAnalytics) => ({
-        name: source.sourceName,
-        value: source.visitors,
-      })
-    );
-  };
-
-  const trafficSourcesData = formatSourceData();
+  const longestWord = max(data.map((d) => d.key.length)) || 1;
 
   return (
     <Card className="shadow-md border-0 overflow-hidden">
@@ -81,56 +69,111 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
         <CardDescription>Where your visitors are coming from</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            {trafficSourcesData.length > 0 ? (
-              <BarChart
-                data={trafficSourcesData}
-                layout="vertical"
-                margin={{
-                  top: 10,
-                  right: 30,
-                  left: 70,
-                  bottom: 10,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  tick={{ fontSize: 12 }}
-                  width={60}
-                  tickFormatter={(value) =>
-                    value.length > 12 ? `${value.substring(0, 10)}...` : value
-                  }
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="value"
-                  name="Visitors"
-                  fill="#3b82f6"
-                  radius={[0, 4, 4, 0]}
-                  barSize={30}
-                >
-                  {trafficSourcesData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS.blue[index % COLORS.blue.length]}
+        <div
+          className="relative w-full h-72"
+          style={
+            {
+              "--marginTop": "0px",
+              "--marginRight": "0px",
+              "--marginBottom": "16px",
+              "--marginLeft": `${longestWord * 7}px`,
+            } as CSSProperties
+          }
+        >
+          {/* Chart Area */}
+          <div
+            className="absolute inset-0
+            z-10
+            h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+            translate-y-[var(--marginTop)]
+            w-[calc(100%-var(--marginLeft)-var(--marginRight))]
+            translate-x-[var(--marginLeft)]
+            overflow-visible"
+          >
+            {data.map((d, index) => {
+              const barWidth = xScale(d.value);
+              const barHeight = yScale.bandwidth();
+
+              return (
+                <ClientTooltip key={index}>
+                  <TooltipTrigger>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "0",
+                        top: `${yScale(d.key)}%`,
+                        width: `${barWidth}%`,
+                        height: `${barHeight}%`,
+                        borderRadius: "0 6px 6px 0", // Rounded right corners
+                      }}
+                      className={`bg-gradient-to-b ${d.color}`}
                     />
-                  ))}
-                </Bar>
-                <Legend />
-              </BarChart>
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <p className="text-gray-500 text-center">
-                  <span className="block text-4xl mb-2 text-blue-300">📊</span>
-                  No traffic source data available
-                </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="font-medium">{d.key}</div>
+                    <div className="text-gray-500 text-sm">{d.value} Visitors</div>
+                  </TooltipContent>
+                </ClientTooltip>
+              );
+            })}
+
+            {/* Grid Lines */}
+            <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {xScale.ticks(8).map((tickValue, i) => (
+                <g
+                  transform={`translate(${xScale(tickValue)},0)`}
+                  className="text-gray-300/80 dark:text-gray-800/80"
+                  key={i}
+                >
+                  <line
+                    y1={0}
+                    y2={100}
+                    stroke="currentColor"
+                    strokeDasharray="6,5"
+                    strokeWidth={0.5}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </g>
+              ))}
+            </svg>
+
+            {/* X Axis */}
+            {xScale.ticks(4).map((value, i) => (
+              <div
+                key={i}
+                style={{
+                  left: `${xScale(value)}%`,
+                  top: "100%",
+                }}
+                className="absolute text-xs -translate-x-1/2 tabular-nums text-gray-400"
+              >
+                {value}
               </div>
-            )}
-          </ResponsiveContainer>
+            ))}
+          </div>
+
+          {/* Y Axis */}
+          <div
+            className="h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+            w-[var(--marginLeft)]
+            translate-y-[var(--marginTop)]
+            overflow-visible"
+          >
+            {data.map((entry, i) => (
+              <span
+                key={i}
+                style={{
+                  left: "-8px",
+                  top: `${yScale(entry.key)! + yScale.bandwidth() / 2}%`,
+                }}
+                className="absolute text-xs text-gray-400 -translate-y-1/2 w-full text-right"
+              >
+                {entry.key.length > 15
+                  ? `${entry.key.substring(0, 12)}...`
+                  : entry.key}
+              </span>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

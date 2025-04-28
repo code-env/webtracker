@@ -1,17 +1,8 @@
-// components/dashboard/top-pages-chart.tsx
-"use client";
-
+import React, { CSSProperties } from "react";
 import { BarChart as BarChartIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { scaleBand, scaleLinear, max } from "d3";
+import { ClientTooltip, TooltipContent, TooltipTrigger } from "@/components/dashboard/client-tooltip";
 
 interface RouteAnalytics {
   id: string;
@@ -28,44 +19,32 @@ interface AnalyticsData {
   analytics: Analytics;
 }
 
-interface BarChartData {
-  page: string;
-  views: number;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number }>;
-  label?: string;
-}
-
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 shadow-lg rounded-md border border-gray-200">
-        <p className="font-medium text-gray-700">{label}</p>
-        <p className="text-blue-600 font-semibold">{`${payload[0].name}: ${payload[0].value}`}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
 export default function TopPagesChart({ analyticsData }: { analyticsData: AnalyticsData }) {
-  // Format route analytics data for bar chart
-  const formatRouteData = (): BarChartData[] => {
+  const formatRouteData = () => {
     if (!analyticsData?.analytics?.routeAnalytics?.length) return [];
 
     return analyticsData.analytics.routeAnalytics
-      .sort((a: RouteAnalytics, b: RouteAnalytics) => b.pageVisits - a.pageVisits)
+      .sort((a, b) => b.pageVisits - a.pageVisits)
       .slice(0, 5)
-      .map((route: RouteAnalytics) => ({
-        page: route.route,
-        views: route.pageVisits,
+      .map((route) => ({
+        key: route.route,
+        value: route.pageVisits,
+        color: "from-blue-300 to-blue-400",
       }));
   };
 
-  const topPagesData = formatRouteData();
+  const data = formatRouteData();
+
+  const yScale = scaleBand()
+    .domain(data.map((d) => d.key))
+    .range([0, 100])
+    .padding(0.175);
+
+  const xScale = scaleLinear()
+    .domain([0, max(data.map((d) => d.value)) ?? 0])
+    .range([0, 100]);
+
+  const longestWord = Math.max(...data.map((d) => d.key.length), 1);
 
   return (
     <Card className="shadow-md border-0 overflow-hidden mb-6">
@@ -77,33 +56,94 @@ export default function TopPagesChart({ analyticsData }: { analyticsData: Analyt
         <CardDescription>Your most visited pages</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            {topPagesData.length > 0 ? (
-              <BarChart
-                data={topPagesData}
-                layout="vertical"
-                margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis
-                  dataKey="page"
-                  type="category"
-                  width={120}
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(value) =>
-                    value.length > 15 ? `${value.substring(0, 12)}...` : value
-                  }
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="views"
-                  fill="#3b82f6"
-                  radius={[0, 4, 4, 0]}
-                  barSize={30}
-                />
-              </BarChart>
+        <div
+          className="relative w-full h-72"
+          style={
+            {
+              "--marginTop": "0px",
+              "--marginRight": "0px",
+              "--marginBottom": "16px",
+              "--marginLeft": `${longestWord * 7}px`,
+            } as CSSProperties
+          }
+        >
+          {/* Chart Area */}
+          <div
+            className="absolute inset-0
+              z-10
+              h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+              translate-y-[var(--marginTop)]
+              w-[calc(100%-var(--marginLeft)-var(--marginRight))]
+              translate-x-[var(--marginLeft)]
+              overflow-visible
+            "
+          >
+            {data.length > 0 ? (
+              <>
+                {data.map((d, index) => {
+                  const barWidth = xScale(d.value);
+                  const barHeight = yScale.bandwidth();
+
+                  return (
+                    <ClientTooltip key={index}>
+                      <TooltipTrigger>
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: "0",
+                            top: `${yScale(d.key)}%`,
+                            width: `${barWidth}%`,
+                            height: `${barHeight}%`,
+                            borderRadius: "0 6px 6px 0",
+                            cursor: "pointer",
+                          }}
+                          className={`bg-gradient-to-b ${d.color}`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold text-sm">{d.key}</span>
+                          <span className="text-xs text-gray-500">{d.value} visits</span>
+                        </div>
+                      </TooltipContent>
+                    </ClientTooltip>
+                  );
+                })}
+
+                {/* Background Grid */}
+                <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {xScale.ticks(8).map(xScale.tickFormat(8, "d")).map((tick, i) => (
+                    <g
+                      transform={`translate(${xScale(+tick)},0)`}
+                      className="text-gray-300/80 dark:text-gray-800/80"
+                      key={i}
+                    >
+                      <line
+                        y1={0}
+                        y2={100}
+                        stroke="currentColor"
+                        strokeDasharray="6,5"
+                        strokeWidth={0.5}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </g>
+                  ))}
+                </svg>
+
+                {/* X Axis (Values) */}
+                {xScale.ticks(10).map((value, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      left: `${xScale(value)}%`,
+                      top: "100%",
+                    }}
+                    className="absolute text-xs -translate-x-1/2 tabular-nums text-gray-400"
+                  >
+                    {value}
+                  </div>
+                ))}
+              </>
             ) : (
               <div className="h-full w-full flex items-center justify-center">
                 <p className="text-gray-500 text-center">
@@ -112,7 +152,29 @@ export default function TopPagesChart({ analyticsData }: { analyticsData: Analyt
                 </p>
               </div>
             )}
-          </ResponsiveContainer>
+          </div>
+
+          {/* Y Axis (Pages) */}
+          <div
+            className="
+              h-[calc(100%-var(--marginTop)-var(--marginBottom))]
+              w-[var(--marginLeft)]
+              translate-y-[var(--marginTop)]
+              overflow-visible"
+          >
+            {data.map((entry, i) => (
+              <span
+                key={i}
+                style={{
+                  left: "-8px",
+                  top: `${yScale(entry.key)! + yScale.bandwidth() / 2}%`,
+                }}
+                className="absolute text-xs text-gray-400 -translate-y-1/2 w-full text-right"
+              >
+                {entry.key.length > 15 ? `${entry.key.slice(0, 12)}...` : entry.key}
+              </span>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

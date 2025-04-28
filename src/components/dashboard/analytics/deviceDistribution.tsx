@@ -1,16 +1,8 @@
-// components/dashboard/device-distribution-chart.tsx
-"use client";
-
+import React from "react";
+import { pie, arc, PieArcDatum } from "d3";
 import { Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  PieChart,
-  Pie,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import { ClientTooltip, TooltipContent, TooltipTrigger } from "@/components/dashboard/client-tooltip"; // assuming Tooltip.tsx is implemented
 
 interface DeviceAnalytics {
   deviceType: string;
@@ -25,48 +17,42 @@ interface AnalyticsData {
   analytics: Analytics;
 }
 
-interface PieChartData {
-  name: string;
-  value: number;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number }>;
-  label?: string;
-}
-
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 shadow-lg rounded-md border border-gray-200">
-        <p className="font-medium text-gray-700">{label}</p>
-        <p className="text-blue-600 font-semibold">{`${payload[0].name}: ${payload[0].value}`}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
 export default function DeviceDistributionChart({ analyticsData }: { analyticsData: AnalyticsData }) {
-  // Colors for charts
-  const COLORS = {
-    green: ["#065f46", "#047857", "#059669", "#10b981", "#34d399"],
-  };
+  const radius = 100;
+  const gap = 0.01;
+  
+  // Colors for different device types
+  const colors = [
+    { colorFrom: "text-emerald-400", colorTo: "text-emerald-500" },
+    { colorFrom: "text-blue-400", colorTo: "text-blue-500" },
+    { colorFrom: "text-purple-400", colorTo: "text-purple-500" },
+    { colorFrom: "text-pink-400", colorTo: "text-pink-500" },
+    { colorFrom: "text-amber-400", colorTo: "text-amber-500" },
+    { colorFrom: "text-sky-400", colorTo: "text-sky-500" }
+  ];
 
-  // Format device analytics data
-  const formatDeviceData = (): PieChartData[] => {
-    if (!analyticsData?.analytics?.deviceAnalytics?.length) return [];
+  const data = analyticsData?.analytics?.deviceAnalytics?.map((device, index) => ({
+    name: device.deviceType,
+    value: device.visitors,
+    colorFrom: colors[index % colors.length].colorFrom,
+    colorTo: colors[index % colors.length].colorTo
+  })) || [];
 
-    return analyticsData.analytics.deviceAnalytics.map(
-      (device: DeviceAnalytics) => ({
-        name: device.deviceType,
-        value: device.visitors,
-      })
-    );
-  };
+  // Pie layout and arc generator
+  const pieLayout = pie<typeof data[0]>()
+    .sort(null)
+    .value(d => d.value)
+    .padAngle(gap);
 
-  const deviceData = formatDeviceData();
+  const arcGenerator = arc<PieArcDatum<typeof data[0]>>()
+    .innerRadius(radius * 0.5) // Donut chart effect
+    .outerRadius(radius)
+    .cornerRadius(4);
+
+  const arcs = pieLayout(data);
+
+  // Calculate total visitors for percentage
+  const totalVisitors = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <Card className="shadow-md border-0 overflow-hidden">
@@ -78,43 +64,77 @@ export default function DeviceDistributionChart({ analyticsData }: { analyticsDa
         <CardDescription>What devices your visitors use</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            {deviceData.length > 0 ? (
-              <PieChart>
-                <Pie
-                  data={deviceData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius="70%"
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+        <div className="h-72 relative">
+          {data.length > 0 ? (
+            <div className="w-full flex flex-col items-center">
+              <div className="relative w-48 h-48">
+                <svg
+                  viewBox={`-${radius} -${radius} ${radius * 2} ${radius * 2}`}
+                  className="w-full h-full"
                 >
-                  {deviceData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS.green[index % COLORS.green.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                />
-              </PieChart>
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <p className="text-gray-500 text-center">
-                  <span className="block text-4xl mb-2 text-green-300">📱</span>
-                  No device data available
-                </p>
+                  {arcs.map((d, i) => {
+                    const midAngle = (d.startAngle + d.endAngle) / 2;
+                    return (
+                      <ClientTooltip key={i}>
+                        <TooltipTrigger>
+                          <g>
+                            <path
+                              d={arcGenerator(d) || ""}
+                              fill={`url(#pieGradient-${i})`}
+                            />
+                            <defs>
+                              <linearGradient
+                                id={`pieGradient-${i}`}
+                                x1="0"
+                                y1="0"
+                                x2="1"
+                                y2="0"
+                                gradientTransform={`rotate(${(midAngle * 180) / Math.PI - 90})`}
+                              >
+                                <stop offset="0%" stopColor="currentColor" className={d.data.colorFrom} />
+                                <stop offset="100%" stopColor="currentColor" className={d.data.colorTo} />
+                              </linearGradient>
+                            </defs>
+                          </g>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="font-medium">{d.data.name}</div>
+                          <div className="text-sm">
+                            {d.data.value.toLocaleString()} visitors
+                            <span className="ml-1 text-gray-400">
+                              ({((d.data.value / totalVisitors) * 100).toFixed(1)}%)
+                            </span>
+                          </div>
+                        </TooltipContent>
+                      </ClientTooltip>
+                    );
+                  })}
+                </svg>
               </div>
-            )}
-          </ResponsiveContainer>
+              
+              {/* Legend */}
+              <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-2">
+                {data.map((item, i) => (
+                  <div key={i} className="flex items-center">
+                    <div className={`w-3 h-3 mr-2 rounded-sm ${item.colorFrom.replace('text-', 'bg-')}`}></div>
+                    <div className="text-sm">
+                      <span className="font-medium">{item.name}</span>
+                      <span className="ml-2 text-gray-500 text-xs">
+                        {((item.value / totalVisitors) * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="h-full w-full flex items-center justify-center">
+              <p className="text-gray-500 text-center">
+                <span className="block text-4xl mb-2 text-green-300">📱</span>
+                No device data available
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
