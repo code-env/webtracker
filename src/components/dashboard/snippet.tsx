@@ -22,7 +22,9 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
 >
 </script>`
 
-  const next_snippet = `<Script
+  const next_snippet = `import Script from "next/script";
+// ...
+<Script
   defer
   data-domain="${domain}"
   src="https://webtracker.avikmukherjee.tech/tracking-script.js"
@@ -46,16 +48,16 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
           <p className="text-xs sm:text-sm text-sky-500 sm:ml-2">{description}</p>
         </div>
         <Tabs defaultValue="JavaScript/React.js" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-2 bg-sky-50 rounded-lg">
+          <TabsList className="w-full bg-sky-50 rounded-lg">
             <TabsTrigger
               value="JavaScript/React.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 text-xs sm:text-sm py-2 rounded-md"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
             >
               JavaScript / React.js
             </TabsTrigger>
             <TabsTrigger
               value="Next.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 text-xs sm:text-sm py-2 rounded-md"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
             >
               Next.js
             </TabsTrigger>

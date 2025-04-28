@@ -27,8 +27,8 @@ export default async function Dashboard(){
           <h1 className="text-2xl font-bold text-blue-500">Your Websites</h1>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary" className="bg-blue-500 text-white hover:bg-blue-600">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button variant="default">
+                <Plus className="h-4 w-4" />
                 Add Website
               </Button>
             </DialogTrigger>

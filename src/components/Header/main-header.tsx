@@ -16,7 +16,7 @@ function SignOut() {
         signOut()
       }}
     >
-      <Button type="submit" className='bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2'>
+      <Button type="submit" variant="default">
         <LogOut className="h-4 w-4" />
         <span>Sign out</span>
       </Button>
