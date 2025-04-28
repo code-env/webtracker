@@ -20,6 +20,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "d3": "^7.9.0",
     "d3-scale": "^4.0.2",
     "drizzle-orm": "^0.43.1",
     "framer-motion": "^12.6.3",
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/d3": "^7.4.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
