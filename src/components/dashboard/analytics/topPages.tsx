@@ -47,7 +47,7 @@ export default function TopPagesChart({ analyticsData }: { analyticsData: Analyt
   const longestWord = Math.max(...data.map((d) => d.key.length), 1);
 
   return (
-    <Card className="shadow-md border-0 overflow-hidden mb-6">
+    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white mb-6">
       <CardHeader className="pb-2 px-4 border-b">
         <CardTitle className="text-lg flex items-center text-blue-700">
           <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />

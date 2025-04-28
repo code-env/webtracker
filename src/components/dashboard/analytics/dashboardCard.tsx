@@ -1,6 +1,3 @@
-// components/dashboard/dashboard-cards.tsx
-"use client";
-
 import { BarChart as BarChartIcon, PieChart as PieChartIcon, Globe } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -46,7 +43,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700">
             <BarChartIcon className="h-5 w-5 mr-2 text-blue-500" />
@@ -63,7 +60,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
         </CardContent>
       </Card>
 
-      <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700">
             <PieChartIcon className="h-5 w-5 mr-2 text-blue-500" />
@@ -80,7 +77,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
         </CardContent>
       </Card>
 
-      <Card className="shadow-md border-0 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+      <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700">
             <Globe className="h-5 w-5 mr-2 text-blue-500" />

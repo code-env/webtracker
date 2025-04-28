@@ -40,6 +40,7 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
       setCopyState("success")
       setTimeout(() => setCopyState("idle"), 2000)
     } catch (err) {
+      console.error("Failed to copy: ", err)
       toast("Failed to copy to Clipboard")
       setCopyState("error")
       setTimeout(() => setCopyState("idle"), 2000)
