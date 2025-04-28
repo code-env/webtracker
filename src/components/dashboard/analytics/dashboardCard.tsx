@@ -43,7 +43,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
+      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
             <BarChartIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
@@ -60,7 +60,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
         </CardContent>
       </Card>
 
-      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
+      <Card className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
             <PieChartIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
@@ -77,7 +77,7 @@ export default function DashboardCards({ analyticsData }: { analyticsData: Analy
         </CardContent>
       </Card>
 
-      <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
+      <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
         <CardHeader className="pb-2 px-4">
           <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
             <Globe className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
