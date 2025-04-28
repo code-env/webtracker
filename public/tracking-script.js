@@ -233,11 +233,11 @@
       if (window.performance && window.performance.timing) {
         var timing = window.performance.timing;
         var performanceData = {
-          load_time: timing.loadEventEnd - timing.navigationStart,
-          dom_ready: timing.domContentLoadedEventEnd - timing.navigationStart,
-          network_latency: timing.responseEnd - timing.requestStart,
-          processing_time: timing.domComplete - timing.responseEnd,
-          total_time: timing.loadEventEnd - timing.navigationStart,
+          load_time: Math.max(0,timing.loadEventEnd - timing.navigationStart),
+          dom_ready: Math.max(0, timing.domContentLoadedEventEnd - timing.navigationStart),
+          network_latency: Math.max(0, timing.responseEnd - timing.requestStart),
+          processing_time: Math.max(0, timing.domComplete - timing.responseEnd),
+          total_time: Math.max(0, timing.loadEventEnd - timing.navigationStart),
         };
   
         // Wait for the load event to finish

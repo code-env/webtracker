@@ -63,6 +63,8 @@ function getDeviceType(userAgent: string) {
   
     // AWS CloudFront
     const cloudfrontCountry = req.headers.get("CloudFront-Viewer-Country");
+    // For Render
+    const renderCountry = req.headers.get("X-Render-Geo-Country");
 
     // If none of the above headers are present, use a default value
     const countryCode =
@@ -70,7 +72,8 @@ function getDeviceType(userAgent: string) {
       vercelCountry ||
       fastlyCountry ||
       akamaiCountry ||
-      cloudfrontCountry ||
+      cloudfrontCountry || 
+      renderCountry ||
       "XX";
   
     // Look up the country name from our mapping, or use a generic name if not found
