@@ -82,10 +82,10 @@ export default function AddWebsite() {
   }, [website]);
 
   return (
-    <Card className="text-white border-0 shadow-none bg-transparent overflow-hidden">
+    <Card className="text-white border-0 shadow-none bg-transparent overflow-hidden dark:bg-zinc-900 dark:text-neutral-200">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-blue-500">Add Website</CardTitle>
-        <CardDescription className="text-blue-500">
+        <CardTitle className="text-2xl font-bold text-blue-500 dark:text-blue-300">Add Website</CardTitle>
+        <CardDescription className="text-blue-500 dark:text-blue-300">
           Add your website to start tracking analytics
         </CardDescription>
       </CardHeader>
@@ -93,47 +93,47 @@ export default function AddWebsite() {
         {step === 1 ? (
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-500">Domain</label>
+              <label className="text-sm font-medium text-blue-500 dark:text-blue-300">Domain</label>
               <Input
                 value={website}
                 onChange={(e) => setWebsite(e.target.value.trim().toLowerCase())}
                 placeholder="example.com"
-                className={`bg-white text-black focus:border-blue-500 focus:ring-blue-500 ${
-                  error ? "border-red-500" : ""
+                className={`bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400 ${
+                  error ? "border-red-500 dark:border-red-400" : ""
                 }`}
               />
               {error ? (
-                <p className="text-sm text-red-400">{error}</p>
+                <p className="text-sm text-red-400 dark:text-red-300">{error}</p>
               ) : (
-                <p className="text-sm text-blue-500">
+                <p className="text-sm text-blue-500 dark:text-blue-300">
                   Enter the domain or subdomain without &quot;www&quot;
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-500">Website Name</label>
+              <label className="text-sm font-medium text-blue-500 dark:text-blue-300">Website Name</label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Website"
-                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500"
+                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-500">Description</label>
+              <label className="text-sm font-medium text-blue-500 dark:text-blue-300">Description</label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of your website"
-                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500"
+                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
               />
             </div>
             
             {!error && (
               <Button
-                className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white"
+                className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-700 dark:hover:bg-blue-600 dark:text-white"
                 onClick={addWebsite}
                 disabled={loading || !website.trim()}
               >
@@ -143,13 +143,10 @@ export default function AddWebsite() {
           </div>
         ) : (
           <div className="space-y-8">
-            
-            
             <Snippet domain={website.trim()}  title="Installation Instructions" description="Add the following Tracking Script to your website to start collecting analytics"/>
-            
             <Button
               onClick={() => router.push(`/dashboard/${website.trim()}`)}
-              className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white"
+              className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-700 dark:hover:bg-blue-600 dark:text-white"
             >
               View Analytics
             </Button>
