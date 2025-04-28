@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer"
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 interface PricingCardProps {
   name: string
@@ -94,6 +95,7 @@ export function PricingCard({
           transition={{ duration: 0.3, delay: delay + 0.4 }}
           className="mt-8"
         >
+        <Link href="/auth">
           <Button 
             className={cn(
               "w-full",
@@ -105,6 +107,7 @@ export function PricingCard({
           >
             {ctaText}
           </Button>
+        </Link>
         </motion.div>
       </div>
 
