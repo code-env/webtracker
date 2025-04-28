@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSession } from "next-auth/react";
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 function SignOut() {
   return (
@@ -27,6 +28,7 @@ function SignOut() {
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
+  const { setTheme, theme, resolvedTheme } = useTheme();
 
   const navLinks = [
     { name: 'Features', href: '/#features' },
@@ -47,14 +49,14 @@ export const Header = () => {
 
   return (
     <div className="relative">
-      <nav className="flex flex-row items-center justify-center bg-white shadow-sm">
+      <nav className="flex flex-row items-center justify-center bg-white dark:bg-neutral-900 shadow-sm">
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
           {/* Logo */}
           <Link href="/" className="text-2xl font-bold flex items-center space-x-2 text-primary">
             <ChartBar className="h-6 w-6" />
             <span>WebTracker</span>
           </Link>
-  
+
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6">
             {session ? afterAuthenticatedNavLinks.map((link) => (
@@ -76,7 +78,7 @@ export const Header = () => {
               </a>
             ))}
           </div>
-  
+
           {/* Desktop Auth Buttons or User Profile */}
           <div className="hidden md:flex items-center">
             {session ? (
@@ -115,9 +117,20 @@ export const Header = () => {
               </>
             )}
           </div>
-  
+
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            {/* Theme Picker Mobile */}
+            <select
+              aria-label="Theme Picker"
+              className="rounded border px-2 py-1 text-sm bg-background text-foreground border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
+              value={theme === 'system' ? 'system' : resolvedTheme}
+              onChange={e => setTheme(e.target.value)}
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
             <Button 
               variant="outline" 
               size="icon" 
@@ -129,7 +142,7 @@ export const Header = () => {
           </div>
         </div>
       </nav>
-  
+
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden w-full px-4 py-4 flex flex-col gap-3 bg-white shadow-md z-10">

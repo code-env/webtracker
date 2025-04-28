@@ -43,8 +43,8 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
         "group relative overflow-hidden rounded-xl border bg-gradient-to-b from-background to-background/50",
         "p-6 transition-all duration-300",
         "hover:shadow-lg hover:-translate-y-1",
-        "border-blue-100 from-blue-50/80 to-blue-50/20",
-        "hover:bg-blue-50/50 hover:border-blue-200"
+        "border-blue-100 dark:border-blue-900 from-blue-50/80 to-blue-50/20 dark:from-blue-900/80 dark:to-blue-900/20",
+        "hover:bg-blue-50/50 hover:border-blue-200 dark:hover:bg-blue-950/50 dark:hover:border-blue-800"
       )}
     >
       <div className="relative z-10">
@@ -56,7 +56,7 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
             delay: delay + 0.3,
             ease: "easeInOut"
           }}
-          className="mb-4 text-blue-500"
+          className="mb-4 text-blue-500 dark:text-blue-200"
         >
           {icon}
         </motion.div>
@@ -65,7 +65,7 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
           initial={{ opacity: 0, x: -20 }}
           animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
           transition={{ duration: 0.5, delay: delay + 0.1 }}
-          className="text-xl font-semibold tracking-tight text-blue-900"
+          className="text-xl font-semibold tracking-tight text-blue-900 dark:text-blue-200"
         >
           {title}
         </motion.h3>
@@ -74,7 +74,7 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
           initial={{ opacity: 0, x: -20 }}
           animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
           transition={{ duration: 0.5, delay: delay + 0.2 }}
-          className="mt-2 text-blue-600/80 leading-relaxed"
+          className="mt-2 text-blue-600/80 leading-relaxed dark:text-blue-200/80"
         >
           {description}
         </motion.p>

@@ -15,32 +15,32 @@ import { FAQSection } from "./fqa";
 
 const Features = [
     {
-        icon: <LineChart className="h-10 w-10 text-primary" />,
+        icon: <LineChart className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Real-time Analytics (Coming Soon)",
         description: "See visitor activity as it happens with live updates and no delay."
     },
     {
-        icon: <MousePointer className="h-10 w-10 text-primary" />,
+        icon: <MousePointer className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Click Tracking (Coming Soon)",
         description: "Understand exactly what elements visitors interact with on your site."
     },
     {
-        icon: <Clock className="h-10 w-10 text-primary" />,
+        icon: <Clock className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Session Duration (Coming Soon)",
         description: "Track how long visitors stay on your site and which pages keep them engaged."
     },
     {
-        icon: <PieChart className="h-10 w-10 text-primary" />,
+        icon: <PieChart className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Traffic Sources",
         description: "Identify where your visitors are coming from to optimize marketing efforts."
     },
     {
-        icon: <Zap className="h-10 w-10 text-primary" />,
+        icon: <Zap className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Performance Metrics",
         description: "Monitor page load times and other performance indicators."
     },
     {
-        icon: <Lock className="h-10 w-10 text-primary" />,
+        icon: <Lock className="h-10 w-10 text-primary dark:text-blue-200" />,
         title: "Privacy Focused",
         description: "Collect data without compromising visitor privacy or using cookies."
     }
@@ -148,7 +148,7 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.h1
-              className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl text-blue-900"
+              className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl text-blue-900 dark:text-blue-200"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -189,12 +189,18 @@ export default function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <CheckCircle2 className="h-4 w-4 text-primary/90" />
-              <span className="text-primary/80">No credit card required</span>
-              <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span className="text-primary/80">Privacy-focused</span>
-              <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span className="text-primary/80">Unlimited websites</span>
+              <div className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <span className="text-primary/80 dark:text-primary">No credit card required</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <span className="text-primary/80 dark:text-primary">Privacy-focused</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <span className="text-primary/80 dark:text-primary">Unlimited websites</span>
+              </div>
             </motion.div>
           </div>
 
@@ -203,7 +209,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative w-full h-[400px] lg:h-[500px] bg-gradient-to-t from-blue-100 via-blue-50 to-white rounded-lg p-6"
+              className="relative w-full h-[400px] lg:h-[500px] bg-gradient-to-t from-blue-100 via-blue-50 to-white dark:from-neutral-800 dark:via-neutral-700 dark:to-neutral-600 rounded-lg p-6"
             >
               <HeroAnimation />
             </motion.div>
@@ -213,7 +219,7 @@ export default function HeroSection() {
 
         </div>
         <section className="container py-12 md:py-24 lg:py-32">
-            <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
+            <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-200">
                 Features that Make a Difference
             </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
