@@ -98,7 +98,7 @@ export const Header = () => {
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-primary/80 font-medium text-sm">Welcome,</span>
+                    <span className="text-primary/80 dark:text-primary font-medium text-sm">Welcome,</span>
                     <span className="text-primary font-semibold">{firstName}</span>
                   </div>
                 </div>
@@ -120,17 +120,6 @@ export const Header = () => {
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden flex items-center gap-2">
-            {/* Theme Picker Mobile */}
-            <select
-              aria-label="Theme Picker"
-              className="rounded border px-2 py-1 text-sm bg-background text-foreground border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
-              value={theme === 'system' ? 'system' : resolvedTheme}
-              onChange={e => setTheme(e.target.value)}
-            >
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="system">System</option>
-            </select>
             <Button 
               variant="outline" 
               size="icon" 
@@ -145,7 +134,7 @@ export const Header = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden w-full px-4 py-4 flex flex-col gap-3 bg-white shadow-md z-10">
+        <div className="md:hidden w-full px-4 py-4 flex flex-col gap-3 bg-white dark:bg-neutral-900 shadow-md z-10">
           {session ? (
             <div className="flex items-center gap-3 border-b border-primary/10 pb-4 mb-2">
               {userImage ? (
@@ -162,7 +151,7 @@ export const Header = () => {
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="text-primary/80 font-medium text-sm">Welcome,</span>
+                <span className="text-primary/80 dark:text-primary font-medium text-sm">Welcome,</span>
                 <span className="text-primary font-semibold">{firstName}</span>
               </div>
             </div>
