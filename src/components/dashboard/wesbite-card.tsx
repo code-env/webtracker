@@ -66,7 +66,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
   return (
     <>
       <Link href={`/dashboard/${website.domain}`}>
-        <Card className="px-4 hover:ring ring-sky-100/30 group relative overflow-hidden border border-sky-700/20 bg-gradient-to-br from-sky-100 via-white to-sky-50 flex flex-col pb-2 transition-all duration-300">
+        <Card className="py-6 px-4 hover:ring ring-sky-100/30 group relative overflow-hidden border border-sky-700/20 bg-gradient-to-br from-sky-100 via-white to-sky-50 flex flex-col transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-br from-sky-200/20 via-sky-100/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute -inset-px bg-gradient-to-br from-sky-200/30 via-sky-300/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
           <CardHeader className="relative flex flex-row items-center justify-between">

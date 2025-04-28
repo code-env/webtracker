@@ -1,12 +1,13 @@
 "use client"
 
-import { Copy, Globe } from "lucide-react"
+import { Copy, CopyCheck, CopyX, Globe } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 import { Card, CardContent } from "../ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"
+import { useState } from "react"
 
 interface SnippetProps {
   domain: string
@@ -15,6 +16,8 @@ interface SnippetProps {
 }
 
 export default function Snippet({ domain, title, description }: SnippetProps) {
+  const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle")
+
   const react_snippet = `<script
   defer
   data-domain="${domain}"
@@ -22,15 +25,25 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
 >
 </script>`
 
-  const next_snippet = `<Script
+  const next_snippet = `import Script from "next/script";
+// ...
+<Script
   defer
   data-domain="${domain}"
   src="https://webtracker.avikmukherjee.tech/tracking-script.js"
 />`
 
   const copySnippet = (snippet: string) => {
-    navigator.clipboard.writeText(snippet)
-    toast("Copied to Clipboard")
+    try {
+      navigator.clipboard.writeText(snippet)
+      toast("Copied to Clipboard")
+      setCopyState("success")
+      setTimeout(() => setCopyState("idle"), 2000)
+    } catch (err) {
+      toast("Failed to copy to Clipboard")
+      setCopyState("error")
+      setTimeout(() => setCopyState("idle"), 2000)
+    }
   }
 
   return (
@@ -45,17 +58,17 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
           </div>
           <p className="text-xs sm:text-sm text-sky-500 sm:ml-2">{description}</p>
         </div>
-        <Tabs defaultValue="JavaScript/React.js" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-2 bg-sky-50 rounded-lg">
+        <Tabs onValueChange={() => setCopyState("idle")} defaultValue="JavaScript/React.js" className="w-full">
+          <TabsList className="w-full bg-sky-50 rounded-lg">
             <TabsTrigger
               value="JavaScript/React.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 text-xs sm:text-sm py-2 rounded-md"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
             >
               JavaScript / React.js
             </TabsTrigger>
             <TabsTrigger
               value="Next.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 text-xs sm:text-sm py-2 rounded-md"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
             >
               Next.js
             </TabsTrigger>
@@ -70,12 +83,27 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
                 </p>
                 <Button
                   onClick={() => copySnippet(react_snippet)}
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="border border-sky-100 text-sky-600 hover:text-sky-700 hover:bg-sky-50 rounded-md"
+                  disabled={copyState !== "idle"}
                 >
-                  <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                  Copy
+                  {copyState === "idle" ? (
+                    <>
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                      Copy
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      {copyState === "success" ? (
+                        <CopyCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+                      ) : (
+                        <CopyX className="h-3 w-3 sm:h-4 sm:w-4" />
+                      )}
+                      <span className="text-xs sm:text-sm">
+                        {copyState === "success" ? "Copied" : "Error"}
+                      </span>
+                    </div>
+                  )}
                 </Button>
               </div>
               <div className="overflow-x-auto max-w-full rounded-md">
@@ -108,12 +136,27 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
                 </p>
                 <Button
                   onClick={() => copySnippet(next_snippet)}
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="border border-sky-100 text-sky-600 hover:text-sky-700 hover:bg-sky-50 rounded-md"
+                  disabled={copyState !== "idle"}
                 >
-                  <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                  Copy
+                  {copyState === "idle" ? (
+                    <>
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                      Copy
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      {copyState === "success" ? (
+                        <CopyCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+                      ) : (
+                        <CopyX className="h-3 w-3 sm:h-4 sm:w-4" />
+                      )}
+                      <span className="text-xs sm:text-sm">
+                        {copyState === "success" ? "Copied" : "Error"}
+                      </span>
+                    </div>
+                  )}
                 </Button>
               </div>
               <div className="overflow-x-auto max-w-full rounded-md">
