@@ -132,7 +132,7 @@ export default function HeroSection() {
     <main className="flex px-8">
       <section className="container py-12 md:py-24 lg:py-32 relative overflow-hidden">
         <div
-          className="absolute inset-0 -z-10 bg-[radial-gradient(45%_25%_at_50%_50%,#e6f0ff_0%,transparent_100%)] opacity-70"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(45%_25%_at_50%_50%,#e6f0ff_0%,transparent_100%)] dark:bg-[radial-gradient(45%_25%_at_50%_50%,#000000_0%,transparent_100%)] opacity-70"
         ></div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_500px] xl:grid-cols-[1fr_550px]">
@@ -253,8 +253,8 @@ export default function HeroSection() {
     <section className="py-20" id="pricing">
   <div className="container">
     <div className="text-center space-y-4 mb-12">
-      <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">Simple, Transparent Pricing</h2>
-      <p className="text-blue-700 max-w-[600px] mx-auto">
+      <h2 className="text-3xl font-bold text-center mb-12 text-blue-900 dark:text-blue-200">Simple, Transparent Pricing</h2>
+      <p className="text-blue-700 dark:text-blue-300 max-w-[600px] mx-auto">
         Choose the plan that best fits your needs. All plans include core analytics features.
       </p>
     </div>
