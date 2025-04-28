@@ -4,7 +4,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 
-import { ArrowRight, CheckCircle2, LineChart, MousePointer, Clock, PieChart, Zap, Lock } from "lucide-react"
+import { ArrowRight, CheckCircle2, LineChart, MousePointer, Clock, PieChart, Zap, Lock, CheckIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 import HeroAnimation from "./hero-animation"
@@ -143,7 +143,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5 }}
             >
               <Badge className="mb-2" variant="outline">
-                <span className="text-emerald-600 mr-1">✓</span> 100% Free
+                <span className="text-emerald-600"><CheckIcon className="h-4 w-4" /></span> 100% Free
               </Badge>
             </motion.div>
 
@@ -158,7 +158,7 @@ export default function HeroSection() {
             </motion.h1>
 
             <motion.p
-              className="max-w-[600px] text-blue-700 md:text-xl"
+              className="max-w-[600px] text-primary md:text-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -189,12 +189,12 @@ export default function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <CheckCircle2 className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-500">No credit card required</span>
+              <CheckCircle2 className="h-4 w-4 text-primary/90" />
+              <span className="text-primary/80">No credit card required</span>
               <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span className="text-blue-500">Privacy-focused</span>
+              <span className="text-primary/80">Privacy-focused</span>
               <CheckCircle2 className="h-4 w-4 text-primary ml-2" />
-              <span className="text-blue-500">Unlimited websites</span>
+              <span className="text-primary/80">Unlimited websites</span>
             </motion.div>
           </div>
 
