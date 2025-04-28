@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer/mainFooter";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner"
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "next-themes";
 
 const inriaSerif = Inria_Serif({
   weight: ["400", "700"],

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSession } from "next-auth/react";
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
-import { useTheme } from 'next-themes';
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 function SignOut() {
   return (
@@ -28,7 +28,6 @@ function SignOut() {
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
-  const { setTheme, theme, resolvedTheme } = useTheme();
 
   const navLinks = [
     { name: 'Features', href: '/#features' },
@@ -101,11 +100,13 @@ export const Header = () => {
                     <span className="text-primary/80 dark:text-primary font-medium text-sm">Welcome,</span>
                     <span className="text-primary font-semibold">{firstName}</span>
                   </div>
+                  <ThemeSwitcher className="ml-2" />
                 </div>
                 <SignOut />
               </div>
             ) : (
               <>
+                <ThemeSwitcher className="mr-4" />
                 <Link href="/auth" className="text-primary/80 hover:text-primary mr-4">
                   Login
                 </Link>
@@ -120,11 +121,12 @@ export const Header = () => {
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden flex items-center gap-2">
+            <ThemeSwitcher />
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setIsOpen(!isOpen)} 
-              className="rounded-xl border-primary/10 text-primary"
+              className="rounded-xl border-primary/10"
             >
               {isOpen ? <X /> : <Menu />}
             </Button>
