@@ -63,7 +63,7 @@ export default function TopPagesChart({ analyticsData }: { analyticsData: Analyt
               "--marginTop": "0px",
               "--marginRight": "0px",
               "--marginBottom": "16px",
-              "--marginLeft": `${longestWord * 7}px`,
+              "--marginLeft": `${longestWord}px`,
             } as CSSProperties
           }
         >
