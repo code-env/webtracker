@@ -6,11 +6,10 @@ import { ArrowLeft, BarChart as BarChartIcon, PieChart as PieChartIcon, Globe, S
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useState, useEffect } from 'react';
-
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { getDomainAnalytics } from "@/app/actions/db_calls";
 import { Skeleton } from "@/components/ui/skeleton";
 import Snippet from "@/components/dashboard/snippet";
+import { getAnalytics } from '@/app/actions/actions';
 
 // Define interfaces for type safety
 interface Visit {
@@ -119,18 +118,18 @@ export default function DashboardPage({ params }: { params: Promise<{ websiteNam
     const websiteName = resolvedParams?.websiteName || 'example.com';
     const [loading, setLoading] = useState<boolean>(true);
     const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null | undefined>(null);
-
     
     useEffect(() => {
         const fetchAnalyticsData = async () => {
             setLoading(true);
             try {
-                const data = await getDomainAnalytics(websiteName);
+                const data = await getAnalytics(websiteName);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-ignore
                 setAnalyticsData(data);
             } catch (error) {
                 console.error("Error fetching analytics data:", error);
+                setAnalyticsData(null);
             } finally {
                 setLoading(false);
             }

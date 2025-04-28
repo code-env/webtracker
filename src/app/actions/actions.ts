@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import { getDomainAnalytics, getDomainProject, getProjects } from "./db_calls";
 
 export const getAllProjects = async (id: string | undefined) => {
@@ -16,6 +17,7 @@ export const getAllProjects = async (id: string | undefined) => {
   };
   
   export const getProjectByDomain = async (domain: string | null) => {
+   
   if (!domain) {
     return null;
   }
@@ -32,8 +34,15 @@ export const getAllProjects = async (id: string | undefined) => {
   if (!domain) {
     return null;
   }
+  const session = await auth();
+
+  if(!session || !session.user) {
+    return null;
+  }
+const userId = session?.user.id as string;
+
   try {
-    const res = await getDomainAnalytics(domain);
+    const res = await getDomainAnalytics(domain, userId);
     return res;
   } catch (error) {
     console.error(`Error fetching analytics for domain ${domain}:`, error);
