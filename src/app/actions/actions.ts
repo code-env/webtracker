@@ -37,15 +37,20 @@ export const getAllProjects = async (id: string | undefined) => {
   const session = await auth();
 
   if(!session || !session.user) {
-    return null;
+    return {status: 401, response: null, message: "Unauthorized"};
   }
 const userId = session?.user.id as string;
 
   try {
     const res = await getDomainAnalytics(domain, userId);
-    return res;
+    if(res){
+      return {status: 200, response: res};
+    }else{
+      return {status: 403, response: null};
+    }
+
   } catch (error) {
     console.error(`Error fetching analytics for domain ${domain}:`, error);
-    return null;
+    return {status: 500, response: null};
   }
   };
