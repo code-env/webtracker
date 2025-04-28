@@ -29,17 +29,17 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
   // Handle empty data
   if (data.length === 0) {
     return (
-      <Card className="shadow-md border border-blue-300 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+      <Card className="shadow-md border border-blue-300 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
         <CardHeader className="pb-2 px-4 border-b">
-          <CardTitle className="text-lg flex items-center text-blue-700">
-            <Globe className="h-5 w-5 mr-2 text-blue-500" />
+          <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+            <Globe className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
             Traffic Sources
           </CardTitle>
-          <CardDescription>Where your visitors are coming from</CardDescription>
+          <CardDescription className="dark:text-blue-200">Where your visitors are coming from</CardDescription>
         </CardHeader>
         <CardContent className="p-4 h-72 flex items-center justify-center">
-          <p className="text-gray-500 text-center">
-            <span className="block text-4xl mb-2 text-blue-300">📊</span>
+          <p className="text-gray-500 text-center dark:text-blue-300">
+            <span className="block text-4xl mb-2 text-blue-300 dark:text-blue-200">📊</span>
             No traffic source data available
           </p>
         </CardContent>
@@ -60,13 +60,13 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
   const longestWord = max(data.map((d) => d.key.length)) || 1;
 
   return (
-    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
       <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Globe className="h-5 w-5 mr-2 text-blue-500" />
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Globe className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Traffic Sources
         </CardTitle>
-        <CardDescription>Where your visitors are coming from</CardDescription>
+        <CardDescription className="dark:text-blue-200">Where your visitors are coming from</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <div
@@ -110,8 +110,8 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="font-medium">{d.key}</div>
-                    <div className="text-gray-500 text-sm">{d.value} Visitors</div>
+                    <div className="font-medium dark:text-blue-200">{d.key}</div>
+                    <div className="text-gray-500 text-sm dark:text-blue-300">{d.value} Visitors</div>
                   </TooltipContent>
                 </ClientTooltip>
               );
@@ -145,7 +145,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
                   left: `${xScale(value)}%`,
                   top: "100%",
                 }}
-                className="absolute text-xs -translate-x-1/2 tabular-nums text-gray-400"
+                className="absolute text-xs -translate-x-1/2 tabular-nums text-gray-400 dark:text-blue-300"
               >
                 {value}
               </div>
@@ -166,7 +166,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
                   left: "-8px",
                   top: `${yScale(entry.key)! + yScale.bandwidth() / 2}%`,
                 }}
-                className="absolute text-xs text-gray-400 -translate-y-1/2 w-full text-right"
+                className="absolute text-xs text-gray-400 -translate-y-1/2 w-full text-right dark:text-blue-300"
               >
                 {entry.key.length > 15
                   ? `${entry.key.substring(0, 12)}...`

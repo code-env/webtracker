@@ -55,13 +55,13 @@ export default function DeviceDistributionChart({ analyticsData }: { analyticsDa
   const totalVisitors = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-blue-900/40">
       <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Smartphone className="h-5 w-5 mr-2 text-blue-500" />
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Smartphone className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Device Distribution
         </CardTitle>
-        <CardDescription>What devices your visitors use</CardDescription>
+        <CardDescription className="dark:text-blue-200">What devices your visitors use</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-72 relative">
@@ -118,8 +118,8 @@ export default function DeviceDistributionChart({ analyticsData }: { analyticsDa
                   <div key={i} className="flex items-center">
                     <div className={`w-3 h-3 mr-2 rounded-sm ${item.colorFrom.replace('text-', 'bg-')}`}></div>
                     <div className="text-sm">
-                      <span className="font-medium">{item.name}</span>
-                      <span className="ml-2 text-gray-500 text-xs">
+                      <span className="font-medium dark:text-blue-200">{item.name}</span>
+                      <span className="ml-2 text-gray-500 text-xs dark:text-blue-300">
                         {((item.value / totalVisitors) * 100).toFixed(1)}%
                       </span>
                     </div>
@@ -129,8 +129,8 @@ export default function DeviceDistributionChart({ analyticsData }: { analyticsDa
             </div>
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-500 text-center">
-                <span className="block text-4xl mb-2 text-green-300">📱</span>
+              <p className="text-gray-500 text-center dark:text-blue-300">
+                <span className="block text-4xl mb-2 text-green-300 dark:text-blue-200">📱</span>
                 No device data available
               </p>
             </div>
