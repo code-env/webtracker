@@ -172,13 +172,13 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <Button asChild size="lg" className="bg-blue-600">
+              <Button asChild size="lg">
                 <Link href="/auth">
                   Start Tracking Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+              <Button asChild variant="outline" size="lg">
                 <Link href="#features">See Features</Link>
               </Button>
             </motion.div>
