@@ -1,50 +1,46 @@
-"use client";
+import { Button } from '@/components/ui/button'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Moon, Sun } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
 
-import * as React from "react";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Sun, Moon, Laptop } from "lucide-react";
-import { cn } from "@/lib/utils";
+export function ThemeSwitcher() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const [ mounted, setMounted ] = useState(false)
 
-const themes = [
-  { label: "Light", value: "light", icon: <Sun className="h-4 w-4" /> },
-  { label: "Dark", value: "dark", icon: <Moon className="h-4 w-4" /> },
-  { label: "System", value: "system", icon: <Laptop className="h-4 w-4" /> },
-];
+  useEffect(
+    () => {
+      setMounted(true)
+    },
+    []
+  )
 
-export function ThemeSwitcher({ className }: { className?: string }) {
-  const { setTheme, theme } = useTheme();
+  if (!mounted) return null
 
   return (
-    <div className={cn("relative", className)}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Toggle theme"
-            className="rounded-xl border-primary/10"
-          >
-            {themes.find((t) => t.value === theme)?.icon}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-36">
-          {themes.map((t) => (
-            <DropdownMenuItem
-              key={t.value}
-              onClick={() => setTheme(t.value)}
-              className={cn(
-                "gap-2",
-                theme === t.value && "font-semibold text-primary"
-              )}
-            >
-              {t.icon}
-              {t.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      className="rounded-full w-9 h-9 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+      aria-label="Toggle theme"
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={resolvedTheme === 'dark' ? 'dark' : 'light'}
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 10, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {resolvedTheme === 'dark' ? (
+            <Moon className="h-5 w-5 text-blue-300" />
+          ) : (
+            <Sun className="h-5 w-5 text-blue-600" />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </Button>
+  )
 }

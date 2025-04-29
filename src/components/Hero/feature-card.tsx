@@ -1,18 +1,24 @@
-"use client"
-
-import { motion } from "framer-motion"
-import { useInView } from "react-intersection-observer"
-import { cn } from "@/lib/utils"
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 
 interface FeatureCardProps {
   icon: React.ReactNode
   title: string
   description: string
   delay?: number
+  comingSoon?: boolean
 }
 
-export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCardProps) {
-  const [ref, inView] = useInView({
+export function FeatureCard({
+  icon,
+  title,
+  description,
+  delay = 0,
+  comingSoon = false
+}: FeatureCardProps) {
+  const [ ref, inView ] = useInView({
     triggerOnce: true,
     threshold: 0.2
   })
@@ -20,76 +26,58 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
   return (
     <motion.div
       ref={ref}
-      initial={{ 
-        opacity: 0, 
+      initial={{
+        opacity: 0,
         y: 20,
-        scale: 0.95
+        scale: 0.98
       }}
-      animate={inView ? { 
-        opacity: 1, 
+      animate={inView ? {
+        opacity: 1,
         y: 0,
         scale: 1
-      } : { 
-        opacity: 0, 
+      } : {
+        opacity: 0,
         y: 20,
-        scale: 0.95
+        scale: 0.98
       }}
-      transition={{ 
-        duration: 0.5,
+      transition={{
+        duration: 0.4,
         delay: delay,
-        ease: "easeOut"
+        ease: 'easeOut'
       }}
       className={cn(
-        "group relative overflow-hidden rounded-xl border bg-gradient-to-b from-background to-background/50",
-        "p-6 transition-all duration-300",
-        "hover:shadow-lg hover:-translate-y-1",
-        "border-blue-100 dark:border-blue-900 from-blue-50/80 to-blue-50/20 dark:from-blue-900/80 dark:to-blue-900/20",
-        "hover:bg-blue-50/50 hover:border-blue-200 dark:hover:bg-blue-950/50 dark:hover:border-blue-800"
+        'group relative overflow-hidden rounded-lg',
+        'p-6 transition-all duration-300',
+        'hover:shadow-lg hover:-translate-y-0.5',
+        'border border-border/50 dark:border-border/30',
+        'bg-card dark:bg-card/90 backdrop-blur-sm'
       )}
     >
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/80 to-indigo-500/80" />
       <div className="relative z-10">
-        <motion.div
-          initial={{ scale: 1 }}
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{
-            duration: 0.4,
-            delay: delay + 0.3,
-            ease: "easeInOut"
-          }}
-          className="mb-4 text-blue-500 dark:text-blue-200"
-        >
-          {icon}
-        </motion.div>
-        
-        <motion.h3
-          initial={{ opacity: 0, x: -20 }}
-          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-          transition={{ duration: 0.5, delay: delay + 0.1 }}
-          className="text-xl font-semibold tracking-tight text-blue-900 dark:text-blue-200"
-        >
-          {title}
-        </motion.h3>
-        
-        <motion.p
-          initial={{ opacity: 0, x: -20 }}
-          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-          transition={{ duration: 0.5, delay: delay + 0.2 }}
-          className="mt-2 text-blue-600/80 leading-relaxed dark:text-blue-200/80"
-        >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="text-primary dark:text-primary flex-shrink-0 text-xl">
+            {icon}
+          </div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-foreground">
+              {title}
+            </h3>
+            {comingSoon && (
+              <Badge
+                variant="outline"
+                className="text-sm font-medium bg-violet-500/10 text-violet-500 dark:bg-violet-400/10 dark:text-violet-400 border-violet-500/20 dark:border-violet-400/20"
+              >
+                Coming Soon
+              </Badge>
+            )}
+          </div>
+        </div>
+        <p className="text-muted-foreground text-base leading-relaxed">
           {description}
-        </motion.p>
+        </p>
       </div>
 
-      {/* Animated border gradient */}
-      <motion.div
-        className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-blue-500 via-blue-400/50 to-blue-500"
-        initial={{ width: "0%" }}
-        whileHover={{ width: "100%" }}
-        transition={{ duration: 0.3 }}
-      />
-
-      {/* Hover effect gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     </motion.div>
   )
 }

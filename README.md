@@ -37,7 +37,7 @@ WebTracker is a powerful, privacy-focused web analytics platform that helps you 
 
 - Node.js (v18 or later)
 - PostgreSQL database
-- npm or yarn
+- bun
 
 ### Installation
 
@@ -49,9 +49,7 @@ WebTracker is a powerful, privacy-focused web analytics platform that helps you 
 
 2. Install dependencies:
    ```bash
-   npm install
-   # or
-   yarn install
+   bun install
    ```
 
 3. Set up environment variables:
@@ -69,9 +67,7 @@ WebTracker is a powerful, privacy-focused web analytics platform that helps you 
 
 5. Start the development server:
    ```bash
-   npm run dev
-   # or
-   yarn dev
+   bun run dev
    ```
 
 ## Usage
@@ -117,16 +113,12 @@ WebTracker can be deployed to any platform that supports Next.js applications:
 
 1. Build the application:
    ```bash
-   npm run build
-   # or
-   yarn build
+   bun run build
    ```
 
 2. Start the production server:
    ```bash
-   npm start
-   # or
-   yarn start
+   bun run start
    ```
 
 ### Database Setup for Production
@@ -152,9 +144,9 @@ webtracker/
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feat/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+4. Push to the branch (`git push origin feat/amazing-feature`)
 5. Open a Pull Request
 
 ## License
