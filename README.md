@@ -8,7 +8,7 @@ WebTracker is a powerful, privacy-focused web analytics platform that helps you 
 
 ## Features
 
-🚀 **Real-Time Analytics** - See visitor activity as it happens with live updates and no delay
+🚀 **Real-Time Analytics** - See visitor activity as it happens with live updates and no delay (Coming Soon)
 
 📊 **Comprehensive Dashboards** - Visualize your web traffic with intuitive charts and graphs
 
