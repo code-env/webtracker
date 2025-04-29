@@ -10,11 +10,10 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "WebTracker",
+    default: "Dashboard | WebTracker",
     template: "%s | WebTracker",
   },
   description: "A web analytics tool for tracking user behavior and performance - Dashboard",
-  
 };
 
 
