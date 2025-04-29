@@ -14,7 +14,10 @@ const inriaSerif = Inria_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "WebTracker",
+  title: {
+    default: "WebTracker",
+    template: "%s | WebTracker",
+  },
   description: "A web analytics tool for tracking user behavior and performance",
   keywords: [
     "web analytics",

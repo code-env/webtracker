@@ -6,6 +6,17 @@ import {redirect} from "next/navigation";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { getAllProjects } from "../actions/actions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "WebTracker",
+    template: "%s | WebTracker",
+  },
+  description: "A web analytics tool for tracking user behavior and performance - Dashboard",
+  
+};
+
 
 export default async function Dashboard(){
     const session = await auth();

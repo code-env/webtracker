@@ -15,6 +15,16 @@ import Snippet from "@/components/dashboard/snippet";
 
 
 import { AnalyticsData } from "@/lib/types";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "WebTracker",
+    template: "%s | WebTracker",
+  },
+  description: "A web analytics tool for tracking user behavior and performance - Dashboard",
+  
+};
 
 
 export default async function DashboardPage({
