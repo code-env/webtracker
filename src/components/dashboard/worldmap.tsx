@@ -69,19 +69,19 @@ const WorldMap = ({ countryData, isLoading }: WorldMapProps) => {
   }, {} as Record<string, string>);
   
   return (
-    <Card className="shadow-md border-0 overflow-hidden">
-      <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Globe className="h-5 w-5 mr-2 text-blue-500" />
+    <Card className="shadow-md border-0 overflow-hidden dark:bg-zinc-900 dark:text-blue-100">
+      <CardHeader className="pb-2 px-4 border-b dark:border-zinc-800">
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Globe className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Visitor World Map
         </CardTitle>
-        <CardDescription>Geographic distribution of your visitors</CardDescription>
+        <CardDescription className="dark:text-blue-200">Geographic distribution of your visitors</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-96">
           {isLoading ? (
             <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-500">Loading map data...</p>
+              <p className="text-gray-500 dark:text-blue-200">Loading map data...</p>
             </div>
           ) : countryData.length > 0 ? (
             <TooltipProvider>
@@ -152,8 +152,8 @@ const WorldMap = ({ countryData, isLoading }: WorldMapProps) => {
             </TooltipProvider>
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-500 text-center">
-                <span className="block text-4xl mb-2 text-blue-300">🗺️</span>
+              <p className="text-gray-500 text-center dark:text-blue-200">
+                <span className="block text-4xl mb-2 text-blue-300 dark:text-blue-500">🗺️</span>
                 No country data available for map visualization
               </p>
             </div>

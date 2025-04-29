@@ -43,15 +43,13 @@ export default function OperatingSystemsChart({
     .range([100, 0]);
 
   return (
-    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
       <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Monitor className="h-5 w-5 mr-2 text-blue-500" />
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Monitor className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Top Operating Systems
         </CardTitle>
-        <CardDescription>
-          What systems your visitors use
-        </CardDescription>
+        <CardDescription className="dark:text-blue-200">What systems your visitors use</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <div
@@ -134,7 +132,7 @@ export default function OperatingSystemsChart({
               return (
                 <div
                   key={i}
-                  className="absolute overflow-visible text-gray-400"
+                  className="absolute overflow-visible text-gray-400 dark:text-blue-300"
                   style={{
                     left: `${xPosition}%`,
                     top: "100%",
@@ -163,11 +161,11 @@ export default function OperatingSystemsChart({
                         borderRadius: "6px 6px 0 0",
                         marginLeft: `${xScale(d.site)}%`,
                       }}
-                      className="absolute bottom-0 bg-gradient-to-b from-amber-200 to-amber-400 cursor-pointer"
+                      className="absolute bottom-0 bg-gradient-to-b from-amber-200 to-amber-400 dark:from-blue-800 dark:to-blue-600 cursor-pointer"
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-xs font-medium">
+                    <div className="text-xs font-medium dark:text-blue-200">
                       {d.site}: {d.visits} visitors
                     </div>
                   </TooltipContent>

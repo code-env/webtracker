@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSession } from "next-auth/react";
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 function SignOut() {
   return (
@@ -47,14 +48,14 @@ export const Header = () => {
 
   return (
     <div className="relative">
-      <nav className="flex flex-row items-center justify-center bg-white shadow-sm">
+      <nav className="flex flex-row items-center justify-center bg-white dark:bg-neutral-900 shadow-sm">
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
           {/* Logo */}
           <Link href="/" className="text-2xl font-bold flex items-center space-x-2 text-primary">
             <ChartBar className="h-6 w-6" />
             <span>WebTracker</span>
           </Link>
-  
+
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6">
             {session ? afterAuthenticatedNavLinks.map((link) => (
@@ -76,7 +77,7 @@ export const Header = () => {
               </a>
             ))}
           </div>
-  
+
           {/* Desktop Auth Buttons or User Profile */}
           <div className="hidden md:flex items-center">
             {session ? (
@@ -96,14 +97,16 @@ export const Header = () => {
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-primary/80 font-medium text-sm">Welcome,</span>
+                    <span className="text-primary/80 dark:text-primary font-medium text-sm">Welcome,</span>
                     <span className="text-primary font-semibold">{firstName}</span>
                   </div>
+                  <ThemeSwitcher className="ml-2" />
                 </div>
                 <SignOut />
               </div>
             ) : (
               <>
+                <ThemeSwitcher className="mr-4" />
                 <Link href="/auth" className="text-primary/80 hover:text-primary mr-4">
                   Login
                 </Link>
@@ -115,24 +118,25 @@ export const Header = () => {
               </>
             )}
           </div>
-  
+
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeSwitcher />
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setIsOpen(!isOpen)} 
-              className="rounded-xl border-primary/10 text-primary"
+              className="rounded-xl border-primary/10"
             >
               {isOpen ? <X /> : <Menu />}
             </Button>
           </div>
         </div>
       </nav>
-  
+
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden w-full px-4 py-4 flex flex-col gap-3 bg-white shadow-md z-10">
+        <div className="md:hidden w-full px-4 py-4 flex flex-col gap-3 bg-white dark:bg-neutral-900 shadow-md z-10">
           {session ? (
             <div className="flex items-center gap-3 border-b border-primary/10 pb-4 mb-2">
               {userImage ? (
@@ -149,7 +153,7 @@ export const Header = () => {
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="text-primary/80 font-medium text-sm">Welcome,</span>
+                <span className="text-primary/80 dark:text-primary font-medium text-sm">Welcome,</span>
                 <span className="text-primary font-semibold">{firstName}</span>
               </div>
             </div>

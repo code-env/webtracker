@@ -129,13 +129,13 @@ export default function CountryDistributionPieChart({
   const MIN_ANGLE = 20;
 
   return (
-    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
       <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Globe className="h-5 w-5 mr-2 text-blue-500" />
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Globe className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Visitor Geography
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="dark:text-blue-200">
           Distribution of visitors by country
         </CardDescription>
       </CardHeader>
@@ -242,8 +242,8 @@ export default function CountryDistributionPieChart({
                         className="rounded-full"
                       />
                       <div className="text-sm">
-                        <span className="font-medium">{item.name}</span>
-                        <span className="ml-2 text-gray-500 text-xs">
+                        <span className="font-medium dark:text-blue-200">{item.name}</span>
+                        <span className="ml-2 text-gray-500 text-xs dark:text-blue-300">
                           {((item.value / totalVisitors) * 100).toFixed(1)}%
                         </span>
                       </div>
@@ -254,10 +254,8 @@ export default function CountryDistributionPieChart({
             </div>
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-500 text-center">
-                <span className="block text-4xl mb-2 text-purple-300">
-                  🌎
-                </span>
+              <p className="text-gray-500 text-center dark:text-blue-300">
+                <span className="block text-4xl mb-2 text-purple-300 dark:text-blue-200">🌎</span>
                 No country data available
               </p>
             </div>

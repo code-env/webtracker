@@ -48,38 +48,38 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
   }
 
   return (
-    <Card className="w-full shadow-md">
+    <Card className="w-full shadow-md dark:bg-zinc-900 border border-sky-100/50 dark:border-sky-800/50">
       <CardContent className="pt-6 p-4 sm:p-6">
-        <div className="flex flex-col gap-2 mb-5 pb-2 border-b border-sky-100">
+        <div className="flex flex-col gap-2 mb-5 pb-2 border-b border-sky-100/50 dark:border-sky-800/50">
           <div className="flex items-center gap-2">
-            <div className="bg-sky-50 p-2 rounded-full">
-              <Globe className="h-5 w-5 text-sky-500" />
+            <div className="bg-sky-50 p-2 rounded-full dark:bg-sky-900">
+              <Globe className="h-5 w-5 text-sky-500 dark:text-sky-300" />
             </div>
-            <h1 className="text-lg font-semibold text-sky-700">{title}</h1>
+            <h1 className="text-lg font-semibold text-sky-700 dark:text-sky-200">{title}</h1>
           </div>
-          <p className="text-xs sm:text-sm text-sky-500 sm:ml-2">{description}</p>
+          <p className="text-xs sm:text-sm text-sky-500 sm:ml-2 dark:text-sky-300">{description}</p>
         </div>
         <Tabs onValueChange={() => setCopyState("idle")} defaultValue="JavaScript/React.js" className="w-full">
-          <TabsList className="w-full bg-sky-50 rounded-lg">
+          <TabsList className="w-full bg-sky-50 rounded-lg dark:bg-sky-900 border border-sky-100/50 dark:border-sky-800/50">
             <TabsTrigger
               value="JavaScript/React.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 dark:data-[state=active]:bg-sky-700 dark:data-[state=active]:text-sky-100 dark:text-sky-300"
             >
               JavaScript / React.js
             </TabsTrigger>
             <TabsTrigger
               value="Next.js"
-              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600"
+              className="data-[state=active]:bg-sky-500 data-[state=active]:text-white text-sky-600 dark:data-[state=active]:bg-sky-700 dark:data-[state=active]:text-sky-100 dark:text-sky-300"
             >
               Next.js
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="JavaScript/React.js" className="mt-5">
-            <div className="rounded-lg bg-white border border-sky-100 shadow-sm p-3 sm:p-4 overflow-hidden">
+            <div className="rounded-lg bg-white border border-sky-100/50 shadow-sm p-3 sm:p-4 overflow-hidden dark:bg-zinc-900 dark:border-sky-800/50">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3">
-                <p className="text-xs sm:text-sm font-medium text-sky-700 flex items-center">
-                  <span className="bg-sky-50 p-1 rounded-md mr-2 text-sky-600 text-xs">HTML</span>
+                <p className="text-xs sm:text-sm font-medium text-sky-700 flex items-center dark:text-sky-200">
+                  <span className="bg-sky-50 p-1 rounded-md mr-2 text-sky-600 text-xs dark:bg-sky-900 dark:text-sky-300">HTML</span>
                   Add to your index.html:
                 </p>
                 <Button
@@ -114,7 +114,7 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
                   customStyle={{
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    border: "1px solid rgba(186, 230, 253, 0.4)",
+                    border: "1px solid rgba(186, 230, 253, 0.2)",
                     fontSize: "12px",
                     maxWidth: "100%",
                     overflow: "auto",
@@ -129,10 +129,10 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
           </TabsContent>
 
           <TabsContent value="Next.js" className="mt-5">
-            <div className="rounded-lg bg-white border border-sky-100 shadow-sm p-3 sm:p-4 overflow-hidden">
+            <div className="rounded-lg bg-white border border-sky-100/50 shadow-sm p-3 sm:p-4 overflow-hidden dark:bg-zinc-900 dark:border-sky-800/50">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3">
-                <p className="text-xs sm:text-sm font-medium text-sky-700 flex items-center">
-                  <span className="bg-sky-50 p-1 rounded-md mr-2 text-sky-600 text-xs">TSX</span>
+                <p className="text-xs sm:text-sm font-medium text-sky-700 flex items-center dark:text-sky-200">
+                  <span className="bg-sky-50 p-1 rounded-md mr-2 text-sky-600 text-xs dark:bg-sky-900 dark:text-sky-300">TSX</span>
                   Add to your app/layout.tsx:
                 </p>
                 <Button
@@ -167,7 +167,7 @@ export default function Snippet({ domain, title, description }: SnippetProps) {
                   customStyle={{
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    border: "1px solid rgba(186, 230, 253, 0.4)",
+                    border: "1px solid rgba(186, 230, 253, 0.2)",
                     fontSize: "12px",
                     maxWidth: "100%",
                     overflow: "auto",

@@ -84,13 +84,13 @@ export default function PerformanceMetricsCard({ analyticsData }: { analyticsDat
   const performanceMetrics = calculatePerformanceMetrics();
 
   return (
-    <Card className="shadow-md border border-blue-200  overflow-hidden bg-gradient-to-br from-blue-50 to-white">
+    <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
       <CardHeader className="pb-2 px-4 border-b">
-        <CardTitle className="text-lg flex items-center text-blue-700">
-          <Clock className="h-5 w-5 mr-2 text-blue-500" />
+        <CardTitle className="text-lg flex items-center text-blue-700 dark:text-blue-200">
+          <Clock className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-300" />
           Performance Metrics
         </CardTitle>
-        <CardDescription>Average page load performance</CardDescription>
+        <CardDescription className="dark:text-blue-200">Average page load performance</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-72 flex flex-col justify-center">
@@ -99,14 +99,14 @@ export default function PerformanceMetricsCard({ analyticsData }: { analyticsDat
               {performanceMetrics.map((metric, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-700 font-medium">
+                    <span className="text-gray-700 font-medium dark:text-blue-200">
                       {metric.name}
                     </span>
-                    <span className="text-blue-600 font-bold">
+                    <span className="text-blue-600 font-bold dark:text-blue-200">
                       {metric.value} {metric.unit}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-zinc-800">
                     <div
                       className={`${metric.color} h-2.5 rounded-full`}
                       style={{
@@ -114,7 +114,7 @@ export default function PerformanceMetricsCard({ analyticsData }: { analyticsDat
                       }}
                     ></div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1 dark:text-blue-300">
                     {metric.name === "Page Load" &&
                       "Total time to fully load the page"}
                     {metric.name === "DOM Ready" &&
@@ -129,8 +129,8 @@ export default function PerformanceMetricsCard({ analyticsData }: { analyticsDat
             </div>
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-500 text-center">
-                <span className="block text-4xl mb-2 text-blue-300">⏱️</span>
+              <p className="text-gray-500 text-center dark:text-blue-300">
+                <span className="block text-4xl mb-2 text-blue-300 dark:text-blue-200">⏱️</span>
                 No performance data available
               </p>
             </div>

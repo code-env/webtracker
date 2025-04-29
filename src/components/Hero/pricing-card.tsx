@@ -40,7 +40,7 @@ export function PricingCard({
       className={cn(
         "relative rounded-xl border bg-background p-8",
         "transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
-        popular && "border-blue-400/50 bg-blue-50 shadow-sm"
+        popular && "border-blue-400/50 bg-blue-50 dark:bg-blue-950 dark:text-white shadow-sm"
       )}
     >
       {popular && (
