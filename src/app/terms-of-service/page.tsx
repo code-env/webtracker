@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Terms of Service | WebTracker",
+    default: "Terms of Service",
     template: "%s | WebTracker",
   },
   description: "A web analytics tool for tracking user behavior and performance",

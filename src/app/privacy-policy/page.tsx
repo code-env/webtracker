@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Privacy Policy | WebTracker",
+    default: "Privacy Policy",
     template: "%s | WebTracker",
   },
   description: "A web analytics tool for tracking user behavior and performance",
