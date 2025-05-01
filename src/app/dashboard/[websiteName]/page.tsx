@@ -16,6 +16,8 @@ import Snippet from "@/components/dashboard/snippet";
 
 import { AnalyticsData } from "@/lib/types";
 import { Metadata } from "next";
+import { fetchLinkPreview } from "@/app/actions/actions";
+import WebsitePreview from "@/components/dashboard/analytics/websitePreview";
 
 export const metadata: Metadata = {
   title: {
@@ -46,6 +48,8 @@ export default async function DashboardPage({
     !analyticsData.analytics.sourceAnalytics?.length &&
     !analyticsData.analytics.routeAnalytics?.length
   );
+
+  const websiteMetadata = await fetchLinkPreview(data.websiteName);
 
   if (responseStatus === 403) {
     return (
@@ -116,14 +120,17 @@ export default async function DashboardPage({
 
             <TopPagesChart analyticsData={analyticsData} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
               <PerformanceMetricsCard analyticsData={analyticsData} />
               <OperatingSystemsChart analyticsData={analyticsData} />
+              <WebsitePreview metadata={websiteMetadata} domain={data.websiteName} />
             </div>
 
             <div className="mb-6">
               <CountryDistribution analyticsData={analyticsData} />
             </div>
+
+           
           </>
         )}
       </div>
