@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Loader from "@/../public/Loader.gif";
 
 export default function Loading() {
   return (
@@ -9,7 +10,7 @@ export default function Loading() {
         <div className="relative w-28 h-28 animate-float">
           <div className="absolute -inset-4 bg-primary/10 rounded-full blur-xl animate-pulse-slow"></div>
           <Image 
-            src="/loader.gif" 
+            src={Loader} 
             width={112}
             height={112}
             alt="Loading" 
