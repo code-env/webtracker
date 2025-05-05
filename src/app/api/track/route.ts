@@ -84,6 +84,32 @@ function getDeviceType(userAgent: string) {
     return { code: countryCode, name: countryName };
   }
 
+
+    function isLocalhost(url: string): boolean {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.hostname === 'localhost' || 
+             urlObj.hostname === '127.0.0.1' ||
+             urlObj.hostname.startsWith('192.168.') ||
+             urlObj.hostname.startsWith('10.') ||
+             urlObj.hostname.startsWith('172.16.') ||
+             urlObj.hostname.startsWith('172.17.') ||
+             urlObj.hostname.startsWith('172.18.') ||
+             urlObj.hostname.startsWith('172.19.') ||
+             urlObj.hostname.startsWith('172.2') ||
+             urlObj.hostname.startsWith('172.30.') ||
+             urlObj.hostname.startsWith('172.31.') ||
+             urlObj.hostname.endsWith('.local') ||
+             urlObj.hostname.endsWith('.internal');
+    } catch (e) {
+      console.error("Error parsing URL:", e);
+      return false;
+    }
+  }
+
+
+
+
   export async function POST(req: NextRequest) {
     try {
       const payload = await req.json();
@@ -100,6 +126,17 @@ function getDeviceType(userAgent: string) {
         path,
         data
       } = payload;
+
+
+    if (isLocalhost(url)) {
+        return NextResponse.json(
+          {
+            error: "Analytics tracking is not available for localhost/development environments",
+          },
+          { headers: corsHeaders },
+        );
+      }
+
   
       if (!url.includes(domain)) {
         return NextResponse.json(
