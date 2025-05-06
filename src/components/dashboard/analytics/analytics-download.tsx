@@ -237,7 +237,7 @@ const AnalyticsSummaryDownload = ({ analyticsData, domain }: AnalyticsSummaryDow
             </div>
             
             <div className="text-center mt-auto pt-4 border-t border-blue-100 dark:border-zinc-700">
-              <p className="text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 inline-block text-transparent bg-clip-text">Powered by WebTracker</p>
+              <p className='text-blue-500'>Powered by WebTracker</p>
             </div>
           </div>
         </div>
