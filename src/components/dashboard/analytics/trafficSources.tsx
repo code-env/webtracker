@@ -1,4 +1,6 @@
-import React, { CSSProperties } from "react";
+"use client";
+
+import React, { CSSProperties, useState, useEffect } from "react";
 import { Globe } from "lucide-react";
 import { scaleBand, scaleLinear, max } from "d3";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -18,6 +20,22 @@ interface AnalyticsData {
 }
 
 export default function TrafficSourcesChart({ analyticsData }: { analyticsData: AnalyticsData }) {
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  
+  // Update window width on resize
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  const isMobile = windowWidth < 640;
+  
   const data = (analyticsData?.analytics?.sourceAnalytics || [])
     .map((d) => ({
       key: d.sourceName,
@@ -25,6 +43,9 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
       color: "from-blue-300 to-blue-400", // You can change color mapping if needed
     }))
     .sort((a, b) => b.value - a.value);
+    
+  // For mobile, limit to top sources if there are many
+  const displayData = isMobile && data.length > 6 ? data.slice(0, 6) : data;
 
   // Handle empty data
   if (data.length === 0) {
@@ -37,7 +58,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
           </CardTitle>
           <CardDescription className="dark:text-blue-200">Where your visitors are coming from</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 h-72 flex items-center justify-center">
+        <CardContent className="p-4 h-64 flex items-center justify-center">
           <p className="text-gray-500 text-center dark:text-blue-300">
             <span className="block text-4xl mb-2 text-blue-300 dark:text-blue-200">📊</span>
             No traffic source data available
@@ -47,17 +68,27 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
     );
   }
 
+  // Calculate maximum value for scale
+  const maxValue = max(displayData.map((d) => d.value)) ?? 0;
+
   // Scales
   const yScale = scaleBand()
-    .domain(data.map((d) => d.key))
+    .domain(displayData.map((d) => d.key))
     .range([0, 100])
     .padding(0.175);
 
   const xScale = scaleLinear()
-    .domain([0, max(data.map((d) => d.value)) ?? 0])
+    .domain([0, maxValue])
     .range([0, 100]);
 
-  const longestWord = max(data.map((d) => d.key.length)) || 1;
+  // Calculate left margin based on longest word and screen size
+  const longestWord = Math.min(
+    max(displayData.map((d) => d.key.length)) || 1,
+    isMobile ? 12 : 20  // Limit label length on mobile
+  );
+  
+  const leftMargin = isMobile ? Math.min(longestWord * 4, 50) : Math.min(longestWord * 5, 100);
+  const chartHeight = isMobile ? "h-64" : "h-72";
 
   return (
     <Card className="shadow-md border border-blue-200 overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:bg-zinc-900 dark:from-zinc-900 dark:to-zinc-900 dark:border-zinc-800 dark:shadow-none">
@@ -68,15 +99,15 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
         </CardTitle>
         <CardDescription className="dark:text-blue-200">Where your visitors are coming from</CardDescription>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-4 overflow-hidden">
         <div
-          className="relative w-full h-72"
+          className={`relative w-full ${chartHeight} overflow-hidden`}
           style={
             {
               "--marginTop": "0px",
-              "--marginRight": "0px",
+              "--marginRight": isMobile ? "4px" : "0px",
               "--marginBottom": "16px",
-              "--marginLeft": `${longestWord * 7}px`,
+              "--marginLeft": `${leftMargin}px`,
             } as CSSProperties
           }
         >
@@ -90,7 +121,7 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
             translate-x-[var(--marginLeft)]
             overflow-visible"
           >
-            {data.map((d, index) => {
+            {displayData.map((d, index) => {
               const barWidth = xScale(d.value);
               const barHeight = yScale.bandwidth();
 
@@ -106,20 +137,20 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
                         height: `${barHeight}%`,
                         borderRadius: "0 6px 6px 0", // Rounded right corners
                       }}
-                      className={`bg-gradient-to-b ${d.color}`}
+                      className={`bg-gradient-to-b ${d.color} transition-all duration-300`}
                     />
                   </TooltipTrigger>
                   <TooltipContent>
                     <div className="font-medium dark:text-blue-200">{d.key}</div>
-                    <div className="text-gray-500 text-sm dark:text-blue-300">{d.value} Visitors</div>
+                    <div className="text-gray-500 text-sm dark:text-blue-300">{d.value.toLocaleString()} Visitors</div>
                   </TooltipContent>
                 </ClientTooltip>
               );
             })}
 
-            {/* Grid Lines */}
+            {/* Grid Lines - fewer on mobile */}
             <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {xScale.ticks(8).map((tickValue, i) => (
+              {xScale.ticks(isMobile ? 3 : 6).map((tickValue, i) => (
                 <g
                   transform={`translate(${xScale(tickValue)},0)`}
                   className="text-gray-300/80 dark:text-gray-800/80"
@@ -137,8 +168,8 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
               ))}
             </svg>
 
-            {/* X Axis */}
-            {xScale.ticks(4).map((value, i) => (
+            {/* X Axis - fewer ticks on mobile */}
+            {xScale.ticks(isMobile ? 3 : 4).map((value, i) => (
               <div
                 key={i}
                 style={{
@@ -147,34 +178,47 @@ export default function TrafficSourcesChart({ analyticsData }: { analyticsData: 
                 }}
                 className="absolute text-xs -translate-x-1/2 tabular-nums text-gray-400 dark:text-blue-300"
               >
-                {value}
+                {isMobile && value > 1000 ? `${Math.round(value / 1000)}k` : value}
               </div>
             ))}
           </div>
 
-          {/* Y Axis */}
+          {/* Y Axis - smaller on mobile */}
           <div
             className="h-[calc(100%-var(--marginTop)-var(--marginBottom))]
             w-[var(--marginLeft)]
             translate-y-[var(--marginTop)]
             overflow-visible"
           >
-            {data.map((entry, i) => (
-              <span
-                key={i}
-                style={{
-                  left: "-8px",
-                  top: `${yScale(entry.key)! + yScale.bandwidth() / 2}%`,
-                }}
-                className="absolute text-xs text-gray-400 -translate-y-1/2 w-full text-right dark:text-blue-300"
-              >
-                {entry.key.length > 15
-                  ? `${entry.key.substring(0, 12)}...`
-                  : entry.key}
-              </span>
-            ))}
+            {displayData.map((entry, i) => {
+              const labelClass = isMobile ? "text-xs" : "text-xs sm:text-sm";
+              const maxLength = isMobile ? 10 : 15;
+              const displayName = entry.key.length > maxLength
+                ? `${entry.key.substring(0, maxLength - 3)}...`
+                : entry.key;
+                
+              return (
+                <span
+                  key={i}
+                  style={{
+                    left: isMobile ? "-4px" : "-8px",
+                    top: `${yScale(entry.key)! + yScale.bandwidth() / 2}%`,
+                  }}
+                  className={`absolute ${labelClass} text-gray-500 -translate-y-1/2 w-full text-right pr-2 dark:text-blue-300`}
+                >
+                  {displayName}
+                </span>
+              );
+            })}
           </div>
         </div>
+        
+        {/* Mobile "See more" message if data was truncated */}
+        {isMobile && data.length > displayData.length && (
+          <div className="text-center text-xs text-blue-500 mt-2 dark:text-blue-300">
+            Showing top {displayData.length} of {data.length} sources
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -12,7 +12,7 @@ import PerformanceMetricsCard from "@/components/dashboard/analytics/Performance
 import CountryDistribution from "@/components/dashboard/analytics/countryDistribution";
 import OperatingSystemsChart from "@/components/dashboard/analytics/osDistribution";
 import Snippet from "@/components/dashboard/snippet";
-
+import AnalyticsSummaryDownload from "@/components/dashboard/analytics/analytics-download";
 
 import { AnalyticsData } from "@/lib/types";
 import { Metadata } from "next";
@@ -110,6 +110,12 @@ export default async function DashboardPage({
           </div>
         ) : (
           <>
+          <div className="flex flex-row-reverse mb-6">
+          <AnalyticsSummaryDownload
+            analyticsData={analyticsData}
+            domain={data.websiteName}
+          />
+          </div>
             {/* Dashboard components */}
             <DashboardCards analyticsData={analyticsData} />
 
