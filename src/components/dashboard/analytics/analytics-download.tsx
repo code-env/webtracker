@@ -207,7 +207,7 @@ const AnalyticsSummaryDownload = ({ analyticsData, domain }: AnalyticsSummaryDow
                 </div>
               </div>
               <div className="bg-white/90 dark:bg-zinc-800/90 p-4 rounded-xl shadow-md border border-blue-100 dark:border-blue-900/30 backdrop-blur-sm">
-                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Top 5 Devices</h3>
+                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Top 2 Devices</h3>
                 <div className="space-y-2">
                   {sortedDeviceAnalytics.slice(0, 5).map((device, index) => (
                     <div key={index} className="flex justify-between items-center">
