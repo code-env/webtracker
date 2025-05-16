@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:generate": "drizzle-kit generate --dialect=postgresql --schema=src/lib/schema.ts --out=./drizzle"
+    "db:generate": "drizzle-kit generate --dialect=postgresql --schema=src/lib/schema.ts --out=./drizzle",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.0",
