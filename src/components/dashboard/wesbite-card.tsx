@@ -71,13 +71,13 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-sky-200/20 via-sky-100/10 to-transparent opacity-0 transition-opacity duration-500 group-hover/main:opacity-100 dark:from-sky-900/20 dark:via-zinc-800/10 dark:to-transparent" />
           <div className="absolute -inset-px bg-gradient-to-br from-sky-200/30 via-sky-300/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover/main:opacity-100 dark:from-sky-900/30 dark:via-zinc-900/10 dark:to-transparent" />
           <CardHeader className="flex items-center gap-2 z-10">
-            <div className="size-10 rounded-full bg-sky-500/20 flex items-center justify-center">
+            <div className="size-10 rounded-md bg-sky-500/20 flex items-center justify-center">
               <Image
                 src={website.icon}
                 alt={website.name}
                 width={32}
                 height={32}
-                className="size-full object-cover"
+                className="size-8 object-cover"
               />
             </div>
             <div className="flex flex-col">

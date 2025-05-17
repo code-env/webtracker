@@ -38,10 +38,20 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const domainMetadata = await getDomainMetadata(values.domain);
+
+    const validDomain = values.domain.trim().toLowerCase();
+
+    if (!validDomain.includes(".")) {
+      return NextResponse.json(
+        { message: "Invalid domain", success: false },
+        { status: 400 }
+      );
+    }
+
+    const domainMetadata = await getDomainMetadata(validDomain);
 
     const exisitingProject = await db.query.projects.findFirst({
-      where: (projects, { eq }) => eq(projects.domain, values.domain),
+      where: (projects, { eq }) => eq(projects.domain, validDomain),
     });
 
     if (exisitingProject) {
