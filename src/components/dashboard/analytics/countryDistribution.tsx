@@ -4,6 +4,7 @@ import { Globe } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ClientTooltip, TooltipContent, TooltipTrigger } from "@/components/dashboard/client-tooltip"; // assuming Tooltip.tsx is implemented
 import Image from "next/image";
+import { countryMap } from "@/lib/fullCountryMap";
 
 interface CountryAnalytics {
   countryName: string;
@@ -20,42 +21,6 @@ interface AnalyticsData {
 
 // Helper function to get country codes for flags
 const getCountryCode = (countryName: string): string => {
-  const countryMap: Record<string, string> = {
-    "United States": "us",
-    "United Kingdom": "gb",
-    "Germany": "de",
-    "France": "fr",
-    "Canada": "ca",
-    "Australia": "au",
-    "Japan": "jp",
-    "China": "cn",
-    "India": "in",
-    "Brazil": "br",
-    "Mexico": "mx",
-    "Spain": "es",
-    "Italy": "it",
-    "Netherlands": "nl",
-    "Russia": "ru",
-    "Portugal": "pt",
-    "Sweden": "se",
-    "Norway": "no",
-    "Finland": "fi",
-    "Denmark": "dk",
-    "South Korea": "kr",
-    "New Zealand": "nz",
-    "South Africa": "za",
-    "Argentina": "ar",
-    "Turkey": "tr",
-    "Saudi Arabia": "sa",
-    "United Arab Emirates": "ae",
-    "Singapore": "sg",
-    "Malaysia": "my",
-    "Philippines": "ph",
-    "Indonesia": "id",
-    "Vietnam": "vn",
-    "Thailand": "th",
-  };
-  
   return countryMap[countryName] || "un"; // Return UN flag as fallback
 };
 
@@ -77,7 +42,6 @@ const formatCountryData = (analyticsData: AnalyticsData | null) => {
 
   return analyticsData.analytics.countryAnalytics
     .sort((a, b) => b.visitors - a.visitors)
-    .slice(0, 8) // Limit to top 8 countries for better visibility
     .map((country, index) => ({
       name: country.countryName,
       value: country.visitors,
@@ -92,7 +56,9 @@ export default function CountryDistributionPieChart({
 }: { 
   analyticsData: AnalyticsData | null 
 }) {
-  const data = formatCountryData(analyticsData);
+  const allData = formatCountryData(analyticsData);
+  // Still display top 8 in the pie chart for better visibility
+  const data = allData.slice(0, 8);
   
   // Chart dimensions
   const radius = 100;
@@ -118,7 +84,7 @@ export default function CountryDistributionPieChart({
   const arcs = pieLayout(data);
   
   // Calculate total visitors for percentage
-  const totalVisitors = data.reduce((sum, item) => sum + item.value, 0);
+  const totalVisitors = allData.reduce((sum, item) => sum + item.value, 0);
   
   // Calculate the angle for each slice
   const computeAngle = (d: PieArcDatum<typeof data[0]>) => {
@@ -139,8 +105,8 @@ export default function CountryDistributionPieChart({
           Distribution of visitors by country
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="h-72 relative">
+      <CardContent className="p-4 max-h-96 overflow-auto">
+        <div className="relative">
           {data.length > 0 ? (
             <div className="w-full flex flex-col items-center">
               <div className="relative w-48 h-48">
@@ -229,31 +195,36 @@ export default function CountryDistributionPieChart({
                 </div>
               </div>
               
-              {/* Legend */}
-              <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-2">
-                {data.map((item, i) => (
-                  <div key={i} className="flex items-center">
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={`https://hatscripts.github.io/circle-flags/flags/${item.flag}.svg`}
-                        alt={item.name}
-                        width={16}
-                        height={16}
-                        className="rounded-full"
-                      />
-                      <div className="text-sm">
-                        <span className="font-medium dark:text-blue-200">{item.name}</span>
-                        <span className="ml-2 text-gray-500 text-xs dark:text-blue-300">
-                          {((item.value / totalVisitors) * 100).toFixed(1)}%
-                        </span>
+              {/* Legend with scrollable container */}
+              <div className="mt-4 w-full">
+                <div className="text-sm font-medium mb-2 text-blue-700 dark:text-blue-300">Countries</div>
+                <div className="max-h-40 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2">
+                    {allData.map((item, i) => (
+                      <div key={i} className="flex items-center">
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={`https://hatscripts.github.io/circle-flags/flags/${item.flag}.svg`}
+                            alt={item.name}
+                            width={16}
+                            height={16}
+                            className="rounded-full"
+                          />
+                          <div className="text-sm">
+                            <span className="font-medium dark:text-blue-200">{item.name}</span>
+                            <span className="ml-2 text-gray-500 text-xs dark:text-blue-300">
+                              {((item.value / totalVisitors) * 100).toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="h-full w-full flex items-center justify-center">
+            <div className="h-64 w-full flex items-center justify-center">
               <p className="text-gray-500 text-center dark:text-blue-300">
                 <span className="block text-4xl mb-2 text-purple-300 dark:text-blue-200">🌎</span>
                 No country data available

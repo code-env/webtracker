@@ -105,6 +105,12 @@ export default async function DashboardPage({
           <NoPageViews domain={data.websiteName} />
         ) : (
           <>
+          <div className="flex flex-row-reverse mb-6">
+          <AnalyticsSummaryDownload
+            analyticsData={analyticsData}
+            domain={data.websiteName}
+          />
+          </div>
             {/* Dashboard components */}
             <DashboardCards analyticsData={analyticsData} />
 
