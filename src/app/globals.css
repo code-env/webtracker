@@ -247,3 +247,20 @@
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+
+pre code {
+  @apply font-mono!;
+}
+
+code.language-html,
+code.language-jsx {
+  @apply bg-transparent!;
+}
+
+pre {
+  @apply bg-[rgb(40,44,52)]!;
+}
+
+.dark pre {
+  @apply bg-sidebar!;
+}
