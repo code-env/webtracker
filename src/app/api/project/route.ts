@@ -61,7 +61,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check your database schema to ensure this matches the actual column names
     const newProject = await db.insert(projects).values({
       domain: values.domain,
       name: domainMetadata.title || values.domain,
