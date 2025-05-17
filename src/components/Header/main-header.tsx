@@ -75,7 +75,7 @@ export const Header = () => {
         "sticky top-0 z-50 transition-all duration-300 border-b border-transparent backdrop-blur-md bg-white/80 dark:bg-neutral-900/80",
         {
           "border-b border-gray-200 dark:border-gray-800": isScrolled,
-          "bg-background": session,
+          "bg-background dark:bg-zinc-950": session,
         }
       )}
     >

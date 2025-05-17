@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import Snippet from "./snippet";
 import { useCreateNewSite } from "@/store";
+import { Label } from "@/components/ui/label";
 
 export default function AddWebsite() {
   const [website, setWebsite] = useState("");
@@ -24,6 +25,8 @@ export default function AddWebsite() {
   const router = useRouter();
   const [error, setError] = useState("");
   const { onClose } = useCreateNewSite();
+
+  const id = useId();
 
   const addWebsite = async () => {
     if (website.trim() === "" || loading) return;
@@ -92,16 +95,28 @@ export default function AddWebsite() {
               <label className="text-sm font-medium text-blue-500 dark:text-blue-300">
                 Domain
               </label>
-              <Input
-                value={website}
-                onChange={(e) =>
-                  setWebsite(e.target.value.trim().toLowerCase())
-                }
-                placeholder="example.com"
-                className={`bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400 ${
-                  error ? "border-red-500 dark:border-red-400" : ""
-                }`}
-              />
+              <div className="*:not-first:mt-2 flex ">
+                <Label htmlFor={id} className="bg-blue-500 hidden">
+                  Input with start add-on
+                </Label>
+                <div className="flex rounded-md shadow-xs">
+                  <span className="border-input border-r-0 bg-background dark:bg-zinc-800 text-muted-foreground  inline-flex items-center rounded-s-md border px-3 text-sm">
+                    https://
+                  </span>
+                </div>
+                <Input
+                  value={website}
+                  onChange={(e) =>
+                    setWebsite(e.target.value.trim().toLowerCase())
+                  }
+                  id={id}
+                  placeholder="example.com"
+                  type="text"
+                  className={`bg-white -ms-px rounded-s-none  ${
+                    error ? "border-red-500 dark:border-red-400" : ""
+                  }`}
+                />
+              </div>
               {error ? (
                 <p className="text-sm text-red-400 dark:text-red-300">
                   {error}
@@ -121,7 +136,6 @@ export default function AddWebsite() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Website"
-                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
               />
             </div>
 
@@ -133,7 +147,6 @@ export default function AddWebsite() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of your website"
-                className="bg-white text-black focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-800 dark:text-blue-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
               />
             </div>
 
